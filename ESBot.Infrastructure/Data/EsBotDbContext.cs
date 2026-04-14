@@ -10,6 +10,7 @@ public class EsBotDbContext : DbContext
     {
     }
 
+    public DbSet<User> Users { get; set; }
     public DbSet<UserSession> UserSessions { get; set; }
     public DbSet<Message> Messages { get; set; }
     public DbSet<QuizRequest> QuizRequests { get; set; }

@@ -6,8 +6,9 @@ public class UserSession
 {
     public Guid Id { get; set; } = Guid.NewGuid();
 
-    [Required]
-    public string UserId { get; set; } = null!;
+    public Guid UserId { get; set; }   // FK
+    
+    public User User { get; set; } = null!;
 
     public DateTime StartedAt { get; set; } = DateTime.UtcNow;
 

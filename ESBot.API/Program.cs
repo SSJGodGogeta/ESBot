@@ -1,3 +1,4 @@
+using ESBot.API.Middleware;
 using HealthChecks.UI.Client;
 using ESBot.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -97,6 +98,7 @@ public class Program
         // =====================
         // Middleware
         // =====================
+        app.UseMiddleware<RequestLoggingMiddleware>();
         app.UseSwagger();
         app.UseSwaggerUI();
 

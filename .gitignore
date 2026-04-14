@@ -1,4 +1,8 @@
+.idea/*
+.idea/**
 **/bin/*
 **/bin/**
+**/obj/*
+**/obj/**
 **/Debug/*
 **/Debug/**

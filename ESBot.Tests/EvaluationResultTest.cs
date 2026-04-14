@@ -60,6 +60,30 @@ public class EvaluationResultEntityTests : IDisposable
         Assert.Throws<DbUpdateException>(() => _context.SaveChanges());
     }
 
+    [Fact]
+    public void EvaluationResult_Creation_WithoutFeedback_ShouldSucceed()
+    {
+        var user = new User { Username = "sieuser", Email = "sie@example.com", HashedPassword = "pw" };
+        var session = new UserSession { User = user };
+        var request = new QuizRequest { Session = session, Topic = "Sci", Difficulty = EDifficulty.Hard };
+        var item = new QuizItem { QuizRequest = request, Question = "Why?", CorrectAnswer = "Because" };
+        var answer = new SubmittedAnswer { QuizItem = item, Answer = "Because" };
+        var eval = new EvaluationResult { SubmittedAnswer = answer, IsCorrect = false, Score = 0.25, Feedback = null };
+
+        _context.Users.Add(user);
+        _context.UserSessions.Add(session);
+        _context.QuizRequests.Add(request);
+        _context.QuizItems.Add(item);
+        _context.SubmittedAnswers.Add(answer);
+        _context.EvaluationResults.Add(eval);
+        _context.SaveChanges();
+
+        var saved = _context.EvaluationResults.Include(e => e.SubmittedAnswer).First(e => e.Id == eval.Id);
+        Assert.False(saved.IsCorrect);
+        Assert.Equal(0.25, saved.Score);
+        Assert.Null(saved.Feedback);
+    }
+
     public void Dispose()
     {
         _context.Dispose();

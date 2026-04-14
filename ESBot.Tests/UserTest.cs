@@ -66,6 +66,44 @@ public class UserEntityTests : IDisposable
     }
 
     [Fact]
+    public void User_Validation_PasswordTooShort_ShouldFail()
+    {
+        var user = new User
+        {
+            Username = "ShortPwUser",
+            Email = "shortpw@example.com",
+            HashedPassword = "short"
+        };
+
+        var validationContext = new ValidationContext(user);
+        var validationResults = new List<ValidationResult>();
+
+        bool isValid = Validator.TryValidateObject(user, validationContext, validationResults, true);
+
+        Assert.False(isValid);
+        Assert.Contains(validationResults, v => v.MemberNames.Contains(nameof(User.HashedPassword)));
+    }
+
+    [Fact]
+    public void User_Validation_UsernameAtMaxLength_ShouldSucceed()
+    {
+        var user = new User
+        {
+            Username = new string('u', 50),
+            Email = "max@example.com",
+            HashedPassword = "password"
+        };
+
+        var validationContext = new ValidationContext(user);
+        var validationResults = new List<ValidationResult>();
+
+        bool isValid = Validator.TryValidateObject(user, validationContext, validationResults, true);
+
+        Assert.True(isValid);
+        Assert.Empty(validationResults);
+    }
+
+    [Fact]
     public void User_Relationships_SessionAssociation_ShouldBeConsistent()
     {
         // Arrange

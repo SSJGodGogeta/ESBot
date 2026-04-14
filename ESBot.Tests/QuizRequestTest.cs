@@ -57,6 +57,24 @@ public class QuizRequestEntityTests : IDisposable
         Assert.Contains(validationResults, v => v.MemberNames.Contains("Topic"));
     }
 
+    [Fact]
+    public void QuizRequest_Validation_TopicLongerThanMaxLength_ShouldFail()
+    {
+        var request = new QuizRequest
+        {
+            Topic = new string('t', 201),
+            Difficulty = EDifficulty.Medium
+        };
+
+        var validationContext = new ValidationContext(request);
+        var validationResults = new List<ValidationResult>();
+
+        bool isValid = Validator.TryValidateObject(request, validationContext, validationResults, true);
+
+        Assert.False(isValid);
+        Assert.Contains(validationResults, v => v.MemberNames.Contains(nameof(QuizRequest.Topic)));
+    }
+
     public void Dispose()
     {
         _context.Dispose();

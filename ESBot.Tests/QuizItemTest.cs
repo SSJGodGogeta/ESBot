@@ -59,6 +59,38 @@ public class QuizItemEntityTests : IDisposable
         Assert.Contains(validationResults, v => v.MemberNames.Contains("Question"));
     }
 
+    [Fact]
+    public void QuizItem_Validation_MissingCorrectAnswer_ShouldFail()
+    {
+        var item = new QuizItem { Question = "What is tested?", CorrectAnswer = null! };
+
+        var validationContext = new ValidationContext(item);
+        var validationResults = new List<ValidationResult>();
+
+        bool isValid = Validator.TryValidateObject(item, validationContext, validationResults, true);
+
+        Assert.False(isValid);
+        Assert.Contains(validationResults, v => v.MemberNames.Contains(nameof(QuizItem.CorrectAnswer)));
+    }
+
+    [Fact]
+    public void QuizItem_Validation_QuestionLongerThanMaxLength_ShouldFail()
+    {
+        var item = new QuizItem
+        {
+            Question = new string('q', 2001),
+            CorrectAnswer = "A"
+        };
+
+        var validationContext = new ValidationContext(item);
+        var validationResults = new List<ValidationResult>();
+
+        bool isValid = Validator.TryValidateObject(item, validationContext, validationResults, true);
+
+        Assert.False(isValid);
+        Assert.Contains(validationResults, v => v.MemberNames.Contains(nameof(QuizItem.Question)));
+    }
+
     public void Dispose()
     {
         _context.Dispose();

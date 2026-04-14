@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace ESBot.API.Controllers;
 
 [ApiController]
-[Route("v1/healthcheck")]
-public class TestController : ControllerBase
+[Route("v1/[controller]")]
+public class HealthCheckController : ControllerBase
 {
     [HttpGet]
     public IActionResult Get()

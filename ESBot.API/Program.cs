@@ -12,7 +12,6 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        // Logging
         builder.Logging.ClearProviders();
         builder.Logging.AddConsole();
 
@@ -20,7 +19,67 @@ public class Program
         if (connectionString == null)
             throw new NullReferenceException("connectionString is null! Please check  your configuration!");
         
-        // Services
+        AddServices(builder, connectionString);
+        
+        var app = builder.Build();
+        var logger = app.Services.GetRequiredService<ILogger<Program>>();
+
+        AddHealthChecks(app);
+        MigrateDatabase(app, logger);
+
+        // =====================
+        // Middleware
+        // =====================
+        app.UseMiddleware<RequestLoggingMiddleware>();
+        app.UseSwagger();
+        app.UseSwaggerUI();
+        app.MapControllers();
+        app.Run();
+    }
+
+    private static void MigrateDatabase(WebApplication app, ILogger<Program> logger)
+    {
+        using (var scope = app.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<EsBotDbContext>();
+            var retries = 10;
+
+            while (retries > 0)
+            {
+                try
+                {
+                    db.Database.Migrate();
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    retries--;
+                    logger.LogWarning(ex, "Database not ready. Retrying... Attempts left: {Retries}",                        retries);
+                    Thread.Sleep(3000);
+                }
+            }
+            
+            DbSeeder.Seed(db);
+        }
+    }
+    
+    private static void AddHealthChecks(WebApplication app)
+    {
+        app.MapHealthChecks("/health/live", new()
+        {
+            Predicate = _ => false,
+            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+        });
+
+        app.MapHealthChecks("/health/ready", new()
+        {
+            Predicate = _ => true,
+            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+        });
+    }
+    
+    private static void AddServices(WebApplicationBuilder builder, String connectionString)
+    {
         builder.Services.AddDbContext<EsBotDbContext>(options =>
             options.UseNpgsql(connectionString));
 
@@ -50,60 +109,5 @@ public class Program
                               "The API is designed to be modular, testable, and extensible, supporting both educational use cases and AI experimentation scenarios."
             });
         });
-        
-        var app = builder.Build();
-        var logger = app.Services.GetRequiredService<ILogger<Program>>();
-
-        // Health Checks
-        app.MapHealthChecks("/health/live", new()
-        {
-            Predicate = _ => false,
-            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-        });
-
-        app.MapHealthChecks("/health/ready", new()
-        {
-            Predicate = _ => true,
-            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-        });
-        
-        // =====================
-        // DB Migration + Seed
-        // =====================
-        using (var scope = app.Services.CreateScope())
-        {
-            var db = scope.ServiceProvider.GetRequiredService<EsBotDbContext>();
-            var retries = 10;
-
-            while (retries > 0)
-            {
-                try
-                {
-                    db.Database.Migrate();
-                    break;
-                }
-                catch (Exception ex)
-                {
-                    retries--;
-                    logger.LogWarning(ex, "Database not ready. Retrying... Attempts left: {Retries}",                        retries);
-                    Thread.Sleep(3000);
-                }
-            }
-            
-            DbSeeder.Seed(db);
-        }
-        
-        
-
-        // =====================
-        // Middleware
-        // =====================
-        app.UseMiddleware<RequestLoggingMiddleware>();
-        app.UseSwagger();
-        app.UseSwaggerUI();
-
-        app.MapControllers();
-
-        app.Run();
     }
 }

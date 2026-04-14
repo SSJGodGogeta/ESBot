@@ -2,10 +2,23 @@
 
 ## 1. Voraussetzungen
 
-Stelle sicher, dass folgende Software installiert ist:
+Stelle sicher, dass .NET 9.0 auf deinen lokalen PC installiert ist.
 
-### .NET 9.0
 [Download Link](<https://dotnet.microsoft.com/en-us/download/dotnet/9.0>)
+
+Oder installiere [Docker Desktop](<https://docs.docker.com/desktop/>) und führe den unten stehenden Befehl aus.
+
+# Docker Setup
+
+Führe den folgenden Befehl aus, nachdem die Installation von Docker Desktop abgeschlossen ist.
+
+```
+docker compose up --build
+```
+
+---
+
+# Lokaler Setup 
 
 Prüfen:
 

@@ -33,7 +33,7 @@ public class UserEntityTests : IDisposable
         {
             Username = "TestUser",
             Email = "test@example.com",
-            HashedPassword = "$2a$12$nW5uUChi/tFaVUfkorghl.oc9C/O5mqcRkOM/MRkDbnpDCoghXmH2",
+            HashedPassword = "pw",
         };
 
         // Act
@@ -73,7 +73,7 @@ public class UserEntityTests : IDisposable
         {
             Username = "Kevin",
             Email = "kevin@test.com",
-            HashedPassword = "$2a$12$nW5uUChi/tFaVUfkorghl.oc9C/O5mqcRkOM/MRkDbnpDCoghXmH2",
+            HashedPassword = "pw",
         };
         var session = new UserSession 
         { 

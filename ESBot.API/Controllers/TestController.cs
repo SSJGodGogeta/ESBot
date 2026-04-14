@@ -3,12 +3,12 @@ using Microsoft.AspNetCore.Mvc;
 namespace ESBot.API.Controllers;
 
 [ApiController]
-[Route("api/test")]
+[Route("v1/healthcheck")]
 public class TestController : ControllerBase
 {
     [HttpGet]
     public IActionResult Get()
     {
-        return Ok("ESBot API is running 🚀");
+        return Ok("ESBot API is running");
     }
 }

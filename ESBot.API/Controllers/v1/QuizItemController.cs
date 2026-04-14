@@ -7,10 +7,10 @@ namespace ESBot.API.Controllers.v1;
 
 [Route("/v1/[controller]")]
 [ApiController]
-public class QuizItemController(EsBotDbContext context): BaseController<QuizItem>(context), IController<QuizItem, QuizItemFilter>
+public class QuizItemsController(EsBotDbContext context): BaseController<QuizItem>(context), IController<QuizItem, QuizItemFilter>
 {
  
-    [HttpGet("filter")]
+    [HttpGet]
     public Task<IActionResult> Filter([FromQuery] QuizItemFilter filter) => base.FilterEntities(filter);
     
     [HttpPost]

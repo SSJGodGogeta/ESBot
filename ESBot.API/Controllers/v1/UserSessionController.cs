@@ -7,10 +7,10 @@ namespace ESBot.API.Controllers.v1;
 
 [Route("/v1/[controller]")]
 [ApiController]
-public class UserSessionController(EsBotDbContext context): BaseController<UserSession>(context), IController<UserSession, UserSessionFilter>
+public class UserSessionsController(EsBotDbContext context): BaseController<UserSession>(context), IController<UserSession, UserSessionFilter>
 {
  
-    [HttpGet("filter")]
+    [HttpGet]
     public Task<IActionResult> Filter([FromQuery] UserSessionFilter filter) => base.FilterEntities(filter);
     
     [HttpPost]

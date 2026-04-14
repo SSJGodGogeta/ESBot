@@ -7,11 +7,11 @@ namespace ESBot.API.Controllers.v1;
 
 [Route("/v1/[controller]")]
 [ApiController]
-public class EvaluationResultController(EsBotDbContext context)
+public class EvaluationResultsController(EsBotDbContext context)
     : BaseController<EvaluationResult>(context), IController<EvaluationResult, EvaluationResultFilter>
 {
  
-    [HttpGet("filter")]
+    [HttpGet]
     public Task<IActionResult> Filter([FromQuery] EvaluationResultFilter filter) => base.FilterEntities(filter);
     
     [HttpPost]

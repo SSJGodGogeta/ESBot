@@ -7,10 +7,10 @@ namespace ESBot.API.Controllers.v1;
 
 [Route("/v1/[controller]")]
 [ApiController]
-public class SubmittedAnswerController(EsBotDbContext context): BaseController<SubmittedAnswer>(context), IController<SubmittedAnswer, SubmittedAnswerFilter>
+public class SubmittedAnswersController(EsBotDbContext context): BaseController<SubmittedAnswer>(context), IController<SubmittedAnswer, SubmittedAnswerFilter>
 {
  
-    [HttpGet("filter")]
+    [HttpGet]
     public Task<IActionResult> Filter([FromQuery] SubmittedAnswerFilter filter) => base.FilterEntities(filter);
     
     [HttpPost]

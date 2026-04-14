@@ -7,10 +7,10 @@ namespace ESBot.API.Controllers.v1;
 
 [Route("/v1/[controller]")]
 [ApiController]
-public class MessageController(EsBotDbContext context): BaseController<Message>(context), IController<Message, MessageFilter>
+public class MessagesController(EsBotDbContext context): BaseController<Message>(context), IController<Message, MessageFilter>
 {
  
-    [HttpGet("filter")]
+    [HttpGet]
     public Task<IActionResult> Filter([FromQuery] MessageFilter filter) => base.FilterEntities(filter);
     
     [HttpPost]

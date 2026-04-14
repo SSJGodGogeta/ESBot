@@ -1,57 +1,53 @@
 using ESBot.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace ESBot.API.Filter.Entities;
 
 public class EvaluationResultFilter : IEntityFilter<EvaluationResult>
 {
-    /*
-    public int? CategoryId { get; set; }
-    public string? Name { get; set; }
-    public string? NameLike { get; set; }
-    public int? ProductId { get; set; }
-    public int? ShelfId { get; set; }
-    public bool IncludeProducts { get; set; } = false;
-    public bool IncludeShelfs { get; set; } = false;
-    */
+    public Guid? Id { get; set; }
+    public Guid? SubmittedAnswerId { get; set; }
+    public bool? IsCorrect { get; set; }
+    public double? MinScore { get; set; }
+    public double? MaxScore { get; set; }
+    public string? FeedbackLike { get; set; }
+
+    public bool IncludeSubmittedAnswer { get; set; } = false;
 
     public async Task<List<EvaluationResult>> Apply(IQueryable<EvaluationResult> query)
     {
-        // Example for filter
-        /*
-        if(CategoryId.HasValue) query = query.Where(c => c.CategoryId == CategoryId);
-        if(ProductId.HasValue) query = query.Where(c => c.Products.Any(p => p.ProductId == ProductId));
-        if (ShelfId.HasValue) query = query.Where(c => c.Shelfs.Any(s => s.ShelfId == ShelfId));
+        // =====================
+        // FILTERS
+        // =====================
 
-        if (!string.IsNullOrWhiteSpace(Name))
-            query = query.Where(c => c.Name == Name);
-        if (!string.IsNullOrWhiteSpace(NameLike))
-            query = query.Where(c => EF.Functions.Like(c.Name.ToLower(), $"%{NameLike.ToLower()}%"));
+        if (Id.HasValue)
+            query = query.Where(e => e.Id == Id);
 
-        List<EvaluationResult> categories =  await query.ToListAsync();
-        if (ProductId.HasValue)
-        {
-            categories.ForEach(i => i.Products = i.Products
-                .Where(p => p.ProductId == ProductId.Value)
-                .ToList());
-        }
-        else if (!IncludeProducts)
-        {
-            categories.ForEach(i => i.Products = []);
-        }
+        if (SubmittedAnswerId.HasValue)
+            query = query.Where(e => e.SubmittedAnswerId == SubmittedAnswerId);
 
-        if (ShelfId.HasValue)
-        {
-            categories.ForEach(i => i.Shelfs = i.Shelfs
-                .Where(s => s.ShelfId == ShelfId.Value)
-                .ToList());
-        }
-        else if (!IncludeShelfs)
-        {
-            categories.ForEach(i => i.Shelfs = []);
-        }
-        return categories;
-    }
-    */
-        return new List<EvaluationResult>();
+        if (IsCorrect.HasValue)
+            query = query.Where(e => e.IsCorrect == IsCorrect);
+
+        if (MinScore.HasValue)
+            query = query.Where(e => e.Score >= MinScore);
+
+        if (MaxScore.HasValue)
+            query = query.Where(e => e.Score <= MaxScore);
+
+        if (!string.IsNullOrWhiteSpace(FeedbackLike))
+            query = query.Where(e =>
+                EF.Functions.Like(e.Feedback!.ToLower(), $"%{FeedbackLike.ToLower()}%"));
+
+        // =====================
+        // INCLUDE
+        // =====================
+
+        if (IncludeSubmittedAnswer)
+            query = query.Include(e => e.SubmittedAnswer);
+
+        var results = await query.ToListAsync();
+
+        return results;
     }
 }

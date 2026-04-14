@@ -18,10 +18,10 @@ public class MessagesController(EsBotDbContext context): BaseController<Message>
 
     
     [HttpDelete]
-    public IActionResult Delete(int id) => base.DeleteEntityAndRespond(id);
+    public IActionResult Delete(Guid id) => base.DeleteEntityAndRespond(id);
 
     
     [HttpPut]
-    public IActionResult Update(int id, [FromBody] Message message) => base.UpdateEntityAndRespond(id, message);
+    public IActionResult Update(Guid id, [FromBody] Message message) => base.UpdateEntityAndRespond(id, message);
     
 }

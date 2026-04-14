@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 public abstract partial class BaseController<TEntity> where TEntity : class, new()
 {
-    protected virtual TEntity? GetEntityById(int id) => DbSet.Find(id);
+    protected virtual TEntity? GetEntityById(Guid id) => DbSet.Find(id);
     protected virtual (bool, Exception?) CreateAndSaveEntity(TEntity? entity)
     {
         try

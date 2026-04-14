@@ -17,11 +17,11 @@ public class UsersController(EsBotDbContext context): BaseController<User>(conte
     public IActionResult Create([FromBody] User user) => base.CreateEntityAndRespond(user);
 
     
-    [HttpDelete]
-    public IActionResult Delete(int id) => base.DeleteEntityAndRespond(id);
+    [HttpDelete("{id:guid}")]
+    public IActionResult Delete(Guid id) => base.DeleteEntityAndRespond(id);
 
     
-    [HttpPut]
-    public IActionResult Update(int id, [FromBody] User user) => base.UpdateEntityAndRespond(id, user);
+    [HttpPut("{id:guid}")]
+    public IActionResult Update(Guid id, [FromBody] User user) => base.UpdateEntityAndRespond(id, user);
     
 }

@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using ESBot.API.Middleware;
 using HealthChecks.UI.Client;
 using ESBot.Infrastructure.Data;
@@ -82,6 +83,12 @@ public class Program
     {
         builder.Services.AddDbContext<EsBotDbContext>(options =>
             options.UseNpgsql(connectionString));
+        
+        builder.Services.AddControllers()
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+            });
 
         builder.Services.AddControllers();
         builder.Services.AddHealthChecks()

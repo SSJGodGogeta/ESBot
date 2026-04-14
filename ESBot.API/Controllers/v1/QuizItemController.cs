@@ -17,11 +17,11 @@ public class QuizItemsController(EsBotDbContext context): BaseController<QuizIte
     public IActionResult Create([FromBody] QuizItem quizItem) => base.CreateEntityAndRespond(quizItem);
 
     
-    [HttpDelete]
-    public IActionResult Delete(int id) => base.DeleteEntityAndRespond(id);
+    [HttpDelete("{id:guid}")]
+    public IActionResult Delete(Guid id) => base.DeleteEntityAndRespond(id);
 
     
-    [HttpPut]
-    public IActionResult Update(int id, [FromBody] QuizItem quizItem) => base.UpdateEntityAndRespond(id, quizItem);
+    [HttpPut("{id:guid}")]
+    public IActionResult Update(Guid id, [FromBody] QuizItem quizItem) => base.UpdateEntityAndRespond(id, quizItem);
     
 }

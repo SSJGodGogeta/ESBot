@@ -17,11 +17,11 @@ public class MessagesController(EsBotDbContext context): BaseController<Message>
     public IActionResult Create([FromBody] Message message) => base.CreateEntityAndRespond(message);
 
     
-    [HttpDelete]
-    public IActionResult Delete(int id) => base.DeleteEntityAndRespond(id);
+    [HttpDelete("{id:guid}")]
+    public IActionResult Delete(Guid id) => base.DeleteEntityAndRespond(id);
 
     
-    [HttpPut]
-    public IActionResult Update(int id, [FromBody] Message message) => base.UpdateEntityAndRespond(id, message);
+    [HttpPut("{id:guid}")]
+    public IActionResult Update(Guid id, [FromBody] Message message) => base.UpdateEntityAndRespond(id, message);
     
 }

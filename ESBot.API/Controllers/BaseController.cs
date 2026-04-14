@@ -58,18 +58,18 @@ public abstract partial class BaseController<TEntity>(EsBotDbContext context) : 
     /// <summary>
     /// Retrieves one entity by the given id.
     /// </summary>
-    /// <param name="id">The PK as int of an entity</param>
+    /// <param name="id">The PK as Guid of an entity</param>
     /// <param name="bypassAuth">If the authorization should be skipped</param>
     /// <param name="bypassPerm">If the authorization should be skipped</param>
     /// <returns>An IActionResult: if a matching entity is found, it returns the entity wrapped in an `Ok` response; 
     /// otherwise, it returns a `NotFound` response with an appropriate message.</returns>
-    protected virtual IActionResult GetEntityByIdAndRespond(int id, bool bypassAuth=true, bool bypassPerm=true)
+    protected virtual IActionResult GetEntityByIdAndRespond(Guid id, bool bypassAuth=true, bool bypassPerm=true)
     {
         try
         {
             if (!IsAuthorized(bypassAuth)) return StatusCode(401, "Unauthenticated"); 
             if (!IsAllowed(bypassPerm)) return StatusCode(403, "Forbidden");   
-            if (id <= 0) return BadRequest($"{typeof(TEntity).Name} ID must be greater than 0.");
+            if (id == Guid.Empty) return BadRequest($"{typeof(TEntity).Name} ID must not be empty.");
             TEntity? entity = GetEntityById(id);
             if (entity is null) return NotFound($"Could not find {typeof(TEntity).Name} by ID {id}");
             return Ok(entity);
@@ -170,13 +170,13 @@ public abstract partial class BaseController<TEntity>(EsBotDbContext context) : 
     /// <param name="bypassAuth">If the authorization should be skipped</param>
     /// <param name="bypassPerm">If the authorization should be skipped</param>
     /// <returns>An IActionResult indicating the outcome of the creation request.</returns>
-    protected virtual IActionResult DeleteEntityAndRespond(int id, bool bypassAuth=true, bool bypassPerm=true)
+    protected virtual IActionResult DeleteEntityAndRespond(Guid id, bool bypassAuth=true, bool bypassPerm=true)
     {
         try
         {
             if (!IsAuthorized(bypassAuth)) return StatusCode(401, "Unauthenticated"); 
             if (!IsAllowed(bypassPerm)) return StatusCode(403, "Forbidden");   
-            if (id <= 0) return BadRequest($"{typeof(TEntity).Name} ID must be greater than 0.");
+            if (id == Guid.Empty) return BadRequest($"{typeof(TEntity).Name} ID must not be empty.");
             TEntity? entity = GetEntityById(id);
             if (entity is null) return NotFound($"Could not find {typeof(TEntity).Name} by ID {id}");
             var result = DeleteEntityAndSave(entity);
@@ -202,13 +202,13 @@ public abstract partial class BaseController<TEntity>(EsBotDbContext context) : 
     /// <param name="updatedEntity">The new entity data containing the updated scalar values.</param>
     /// <param name="bypassAuth">If the authorization should be skipped</param>
     /// <param name="bypassPerm">If the authorization should be skipped</param>
-    protected virtual IActionResult UpdateEntityAndRespond(int id, [FromBody] TEntity updatedEntity, bool bypassAuth=true, bool bypassPerm=true)
+    protected virtual IActionResult UpdateEntityAndRespond(Guid id, [FromBody] TEntity updatedEntity, bool bypassAuth=true, bool bypassPerm=true)
     {
         try
         {
             if (!IsAuthorized(bypassAuth)) return StatusCode(401, "Unauthenticated"); 
             if (!IsAllowed(bypassPerm)) return StatusCode(403, "Forbidden");   
-            if (id <= 0) return BadRequest("Invalid ID.");
+            if (id == Guid.Empty) return BadRequest("Invalid ID.");
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             TEntity? existingEntityDto = GetEntityById(id);
@@ -221,7 +221,9 @@ public abstract partial class BaseController<TEntity>(EsBotDbContext context) : 
             if (idProp == null)
                 return BadRequest("Could not identify ID property on entity. Please check the name and the naming conventions");
             var updatedIdValue = idProp.GetValue(updatedEntity);
-            if (!id.Equals(updatedIdValue))
+            if (updatedIdValue is not Guid updatedGuid)
+                return BadRequest("The entity ID must be a Guid.");
+            if (id != updatedGuid)
                 return BadRequest($"The ID in the body does not match the ID in the URL. Body ID/URL ID: {updatedIdValue}/{id}");
 
             var result = UpdateEntityAndSave(existingEntityDto, updatedEntity);

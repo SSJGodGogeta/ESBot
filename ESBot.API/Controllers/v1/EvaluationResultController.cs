@@ -18,11 +18,11 @@ public class EvaluationResultsController(EsBotDbContext context)
     public IActionResult Create([FromBody] EvaluationResult evaluationResult) => base.CreateEntityAndRespond(evaluationResult);
 
     
-    [HttpDelete]
-    public IActionResult Delete(int id) => base.DeleteEntityAndRespond(id);
+    [HttpDelete("{id:guid}")]
+    public IActionResult Delete(Guid id) => base.DeleteEntityAndRespond(id);
 
     
-    [HttpPut]
-    public IActionResult Update(int id, [FromBody] EvaluationResult evaluationResult) => base.UpdateEntityAndRespond(id, evaluationResult);
+    [HttpPut("{id:guid}")]
+    public IActionResult Update(Guid id, [FromBody] EvaluationResult evaluationResult) => base.UpdateEntityAndRespond(id, evaluationResult);
     
 }

@@ -1,0 +1,6 @@
+@ESBot.API_HostAddress = http://localhost:5243
+
+GET {{ESBot.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

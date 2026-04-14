@@ -1,4 +1,4 @@
-using System.Reflection;
+using HealthChecks.UI.Client;
 using ESBot.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -11,16 +11,24 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        // =====================
+        // Logging
+        builder.Logging.ClearProviders();
+        builder.Logging.AddConsole();
+
+        string? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+        if (connectionString == null)
+            throw new NullReferenceException("connectionString is null! Please check  your configuration!");
+        
         // Services
-        // =====================
         builder.Services.AddDbContext<EsBotDbContext>(options =>
-            options.UseNpgsql(
-                builder.Configuration.GetConnectionString("DefaultConnection")));
+            options.UseNpgsql(connectionString));
 
         builder.Services.AddControllers();
+        builder.Services.AddHealthChecks()
+            .AddDbContextCheck<EsBotDbContext>("database")
+            .AddNpgSql(connectionString, name: "postgres");
+        
         builder.Services.AddEndpointsApiExplorer();
-
         builder.Services.AddSwaggerGen(options =>
         {
             options.SwaggerDoc("v1", new()
@@ -43,18 +51,48 @@ public class Program
         });
         
         var app = builder.Build();
+        var logger = app.Services.GetRequiredService<ILogger<Program>>();
 
+        // Health Checks
+        app.MapHealthChecks("/health/live", new()
+        {
+            Predicate = _ => false,
+            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+        });
+
+        app.MapHealthChecks("/health/ready", new()
+        {
+            Predicate = _ => true,
+            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+        });
+        
         // =====================
         // DB Migration + Seed
         // =====================
         using (var scope = app.Services.CreateScope())
         {
             var db = scope.ServiceProvider.GetRequiredService<EsBotDbContext>();
+            var retries = 10;
 
-            db.Database.Migrate();
-
+            while (retries > 0)
+            {
+                try
+                {
+                    db.Database.Migrate();
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    retries--;
+                    logger.LogWarning(ex, "Database not ready. Retrying... Attempts left: {Retries}",                        retries);
+                    Thread.Sleep(3000);
+                }
+            }
+            
             DbSeeder.Seed(db);
         }
+        
+        
 
         // =====================
         // Middleware

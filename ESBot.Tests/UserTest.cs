@@ -85,6 +85,25 @@ public class UserEntityTests : IDisposable
     }
 
     [Fact]
+    public void User_Validation_PasswordTooLong_ShouldFail()
+    {
+        var user = new User
+        {
+            Username = "LongPwUser",
+            Email = "longpw@example.com",
+            HashedPassword = new string('x', 51)
+        };
+        
+        var validationContext = new ValidationContext(user);
+        var validationResults = new List<ValidationResult>();
+        
+        bool isValid = Validator.TryValidateObject(user, validationContext, validationResults, true);
+        
+        Assert.False(isValid);
+        Assert.Contains(validationResults, v => v.MemberNames.Contains(nameof(User.HashedPassword)));
+    }
+
+    [Fact]
     public void User_Validation_UsernameAtMaxLength_ShouldSucceed()
     {
         var user = new User
@@ -131,6 +150,25 @@ public class UserEntityTests : IDisposable
 
         Assert.Single(retrievedUser.Sessions);
         Assert.Equal(retrievedUser.Id, retrievedUser.Sessions.First().UserId);
+    }
+    
+    [Fact]
+    public void User_Validation_EmailInvalidFormat_ShouldFail()
+    {
+        var user = new User
+        {
+            Username = "InvalidEmailUser",
+            Email = "youve-got-mail",
+            HashedPassword = "pw"
+        };
+
+        var validationContext = new ValidationContext(user);
+        var validationResults = new List<ValidationResult>();
+
+        bool isValid = Validator.TryValidateObject(user, validationContext, validationResults, true);
+
+        Assert.False(isValid);
+        Assert.Contains(validationResults, v => v.MemberNames.Contains(nameof(User.Email)));
     }
 
     public void Dispose()

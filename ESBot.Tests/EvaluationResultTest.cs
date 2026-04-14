@@ -84,6 +84,50 @@ public class EvaluationResultEntityTests : IDisposable
         Assert.Null(saved.Feedback);
     }
 
+    [Fact]
+    public void EvaluationResult_Creation_WithNegativeScore_ShouldSucceed()
+    {
+        var user = new User { Username = "negscoreuser", Email = "negscore@example.com", HashedPassword = "password" };
+        var session = new UserSession { User = user };
+        var request = new QuizRequest { Session = session, Topic = "Sci", Difficulty = EDifficulty.Hard };
+        var item = new QuizItem { QuizRequest = request, Question = "Why?", CorrectAnswer = "Because" };
+        var answer = new SubmittedAnswer { QuizItem = item, Answer = "Because" };
+        var eval = new EvaluationResult { SubmittedAnswer = answer, IsCorrect = false, Score = -1.0, Feedback = "Penalty" };
+
+        _context.Users.Add(user);
+        _context.UserSessions.Add(session);
+        _context.QuizRequests.Add(request);
+        _context.QuizItems.Add(item);
+        _context.SubmittedAnswers.Add(answer);
+        _context.EvaluationResults.Add(eval);
+        _context.SaveChanges();
+
+        var saved = _context.EvaluationResults.First(e => e.Id == eval.Id);
+        Assert.Equal(-1.0, saved.Score);
+    }
+
+    [Fact]
+    public void EvaluationResult_Creation_WithScoreGreaterThanOne_ShouldSucceed()
+    {
+        var user = new User { Username = "highscoreuser", Email = "highscore@example.com", HashedPassword = "password" };
+        var session = new UserSession { User = user };
+        var request = new QuizRequest { Session = session, Topic = "Sci", Difficulty = EDifficulty.Hard };
+        var item = new QuizItem { QuizRequest = request, Question = "Why?", CorrectAnswer = "Because" };
+        var answer = new SubmittedAnswer { QuizItem = item, Answer = "Because" };
+        var eval = new EvaluationResult { SubmittedAnswer = answer, IsCorrect = true, Score = 1.5, Feedback = "Bonus" };
+
+        _context.Users.Add(user);
+        _context.UserSessions.Add(session);
+        _context.QuizRequests.Add(request);
+        _context.QuizItems.Add(item);
+        _context.SubmittedAnswers.Add(answer);
+        _context.EvaluationResults.Add(eval);
+        _context.SaveChanges();
+
+        var saved = _context.EvaluationResults.First(e => e.Id == eval.Id);
+        Assert.Equal(1.5, saved.Score);
+    }
+
     public void Dispose()
     {
         _context.Dispose();

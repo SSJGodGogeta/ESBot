@@ -93,6 +93,24 @@ public class MessageEntityTests : IDisposable
         Assert.False(isValid);
         Assert.Contains(validationResults, v => v.MemberNames.Contains(nameof(Message.Content)));
     }
+    
+    [Fact]
+    public void Message_Validation_ContentAtMaxLength_ShouldSucceed()
+    {
+        var message = new Message
+        {
+            Content = new string('x', 4000),
+            Role = EMessageRole.User
+        };
+
+        var validationContext = new ValidationContext(message);
+        var validationResults = new List<ValidationResult>();
+
+        bool isValid = Validator.TryValidateObject(message, validationContext, validationResults, true);
+
+        Assert.True(isValid);
+        Assert.Empty(validationResults);
+    }
 
     [Fact]
     public void Message_Relationships_SessionAssociation_ShouldBeConsistent()

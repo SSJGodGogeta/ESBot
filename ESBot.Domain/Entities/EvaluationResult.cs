@@ -2,6 +2,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ESBot.Domain.Entities;
 
+/// <summary>
+/// Represents the evaluation result of a submitted quiz answer.
+/// Contains correctness, score, and optional feedback for the user.
+/// </summary>
 public class EvaluationResult
 {
     public Guid Id { get; set; } = Guid.NewGuid();

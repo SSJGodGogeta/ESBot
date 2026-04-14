@@ -2,6 +2,7 @@
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using ESBot.Domain.Entities;
+using ESBot.Domain.Enums;
 using ESBot.Infrastructure.Data;
 
 namespace ESBot.Tests;
@@ -81,8 +82,8 @@ public class MessageEntityTests : IDisposable
             .First(s => s.Id == session.Id);
 
         Assert.Single(retrieved.Messages);
-        Assert.Equal(retrieved.Id, retrieved.Messages[0].SessionId);
-        Assert.Equal("Rel test", retrieved.Messages[0].Content);
+        Assert.Equal(retrieved.Id, retrieved.Messages.First().SessionId);
+        Assert.Equal("Rel test", retrieved.Messages.First().Content);
     }
 
     public void Dispose()

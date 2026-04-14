@@ -92,7 +92,7 @@ public class UserEntityTests : IDisposable
             .First(u => u.Username == "Kevin");
 
         Assert.Single(retrievedUser.Sessions);
-        Assert.Equal(retrievedUser.Id, retrievedUser.Sessions[0].UserId);
+        Assert.Equal(retrievedUser.Id, retrievedUser.Sessions.First().UserId);
     }
 
     public void Dispose()

@@ -1,4 +1,4 @@
-namespace ESBot.Domain.Entities;
+namespace ESBot.Domain.Enums;
 
 public enum EDifficulty
 {

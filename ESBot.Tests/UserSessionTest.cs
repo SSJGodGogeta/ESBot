@@ -2,6 +2,7 @@
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using ESBot.Domain.Entities;
+using ESBot.Domain.Enums;
 using ESBot.Infrastructure.Data;
 
 namespace ESBot.Tests;
@@ -56,7 +57,7 @@ public class UserSessionEntityTests : IDisposable
 
         var retrieved = _context.UserSessions.Include(s => s.Messages).First(s => s.Id == session.Id);
         Assert.Single(retrieved.Messages);
-        Assert.Equal(retrieved.Id, retrieved.Messages[0].SessionId);
+        Assert.Equal(retrieved.Id, retrieved.Messages.First().SessionId);
     }
 
     public void Dispose()

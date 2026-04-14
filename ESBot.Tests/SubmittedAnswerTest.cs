@@ -2,6 +2,7 @@
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using ESBot.Domain.Entities;
+using ESBot.Domain.Enums;
 using ESBot.Infrastructure.Data;
 
 namespace ESBot.Tests;

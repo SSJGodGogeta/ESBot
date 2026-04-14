@@ -1,28 +1,47 @@
-using Microsoft.EntityFrameworkCore;
 using ESBot.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
-var builder = WebApplication.CreateBuilder(args);
+namespace ESBot.API;
 
-builder.Services.AddDbContext<EsBotDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-var app = builder.Build();
-
-// Automatic DB Migratioon 
-using (var scope = app.Services.CreateScope())
+public class Program
 {
-    var db = scope.ServiceProvider.GetRequiredService<EsBotDbContext>();
+    public static void Main(string[] args)
+    {
+        var builder = WebApplication.CreateBuilder(args);
 
-    db.Database.Migrate();
+        // =====================
+        // Services
+        // =====================
+        builder.Services.AddDbContext<EsBotDbContext>(options =>
+            options.UseNpgsql(
+                builder.Configuration.GetConnectionString("DefaultConnection")));
+
+        builder.Services.AddControllers();
+        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddSwaggerGen();
+
+        var app = builder.Build();
+
+        // =====================
+        // DB Migration + Seed
+        // =====================
+        using (var scope = app.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<EsBotDbContext>();
+
+            db.Database.Migrate();
+
+            DbSeeder.Seed(db);
+        }
+
+        // =====================
+        // Middleware
+        // =====================
+        app.UseSwagger();
+        app.UseSwaggerUI();
+
+        app.MapControllers();
+
+        app.Run();
+    }
 }
-
-app.UseSwagger();
-app.UseSwaggerUI();
-
-app.MapControllers();
-
-app.Run();

@@ -2,6 +2,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ESBot.Domain.Entities;
 
+/// <summary>
+/// Represents an answer submitted by a user for a specific quiz item.
+/// Stores the user's response before evaluation.
+/// </summary>
 public class SubmittedAnswer
 {
     public Guid Id { get; set; } = Guid.NewGuid();
@@ -12,10 +16,11 @@ public class SubmittedAnswer
     public QuizItem QuizItem { get; set; } = null!;
 
     [Required]
+    [MaxLength(2000)]
     public string Answer { get; set; } = null!;
 
+    [Required]
     public DateTime SubmittedAt { get; set; } = DateTime.UtcNow;
 
-    // Navigation
     public EvaluationResult? EvaluationResult { get; set; }
 }

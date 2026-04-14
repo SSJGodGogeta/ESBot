@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using ESBot.API.Middleware;
 using HealthChecks.UI.Client;
 using ESBot.Infrastructure.Data;
@@ -81,9 +82,17 @@ public class Program
     private static void AddServices(WebApplicationBuilder builder, String connectionString)
     {
         builder.Services.AddDbContext<EsBotDbContext>(options =>
-            options.UseNpgsql(connectionString));
+        {
+            options.UseNpgsql(connectionString);
+            options.EnableDetailedErrors();
+            options.EnableSensitiveDataLogging();
+        });
 
-        builder.Services.AddControllers();
+        builder.Services.AddControllers()
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+            });
         builder.Services.AddHealthChecks()
             .AddDbContextCheck<EsBotDbContext>("database")
             .AddNpgSql(connectionString, name: "postgres");

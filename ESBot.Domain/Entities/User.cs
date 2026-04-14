@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using ESBot.Domain.Interfaces;
 
 namespace ESBot.Domain.Entities;
 
@@ -6,7 +7,7 @@ namespace ESBot.Domain.Entities;
 /// Represents a registered user in the ESBot system.
 /// A user is the root identity entity and can have multiple learning sessions.
 /// </summary>
-public class User
+public class User : IImmutableProperties
 {
     public Guid Id { get; set; } = Guid.NewGuid();
 
@@ -24,8 +25,11 @@ public class User
     public string HashedPassword { get; set; } = null!;
     
     [Required]
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
 
     // Navigation
     public ICollection<UserSession> Sessions { get; set; } = new List<UserSession>();
+    
+    public IEnumerable<string> GetImmutableProperties()
+        => new[] { nameof(CreatedAt) };
 }

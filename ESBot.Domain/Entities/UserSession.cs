@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using ESBot.Domain.Interfaces;
 
 namespace ESBot.Domain.Entities;
 
@@ -6,7 +7,7 @@ namespace ESBot.Domain.Entities;
 /// Represents a single learning session of a user.
 /// A session groups all messages, quiz requests, and interactions within a specific learning context.
 /// </summary>
-public class UserSession
+public class UserSession : IImmutableProperties
 {
     public Guid Id { get; set; } = Guid.NewGuid();
 
@@ -16,7 +17,7 @@ public class UserSession
     public User User { get; set; } = null!;
 
     [Required]
-    public DateTime StartedAt { get; set; } = DateTime.UtcNow;
+    public DateTime StartedAt { get; private set; } = DateTime.UtcNow;
 
     public DateTime? EndedAt { get; set; }
 
@@ -34,4 +35,7 @@ public class UserSession
         message.Session = this;
         Messages.Add(message);
     }
+    
+    public IEnumerable<string> GetImmutableProperties()
+        => new[] { nameof(StartedAt) };
 }

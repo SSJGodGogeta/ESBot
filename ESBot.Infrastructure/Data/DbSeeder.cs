@@ -36,14 +36,12 @@ public static class DbSeeder
         // =====================
         var session1 = new UserSession
         {
-            UserId = user1.Id,
-            StartedAt = DateTime.UtcNow
+            UserId = user1.Id
         };
 
         var session2 = new UserSession
         {
             UserId = user2.Id,
-            StartedAt = DateTime.UtcNow
         };
 
         db.UserSessions.AddRange(session1, session2);

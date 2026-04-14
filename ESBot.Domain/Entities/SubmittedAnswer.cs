@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using ESBot.Domain.Interfaces;
 
 namespace ESBot.Domain.Entities;
 
@@ -6,7 +7,7 @@ namespace ESBot.Domain.Entities;
 /// Represents an answer submitted by a user for a specific quiz item.
 /// Stores the user's response before evaluation.
 /// </summary>
-public class SubmittedAnswer
+public class SubmittedAnswer : IImmutableProperties
 {
     public Guid Id { get; set; } = Guid.NewGuid();
 
@@ -20,7 +21,11 @@ public class SubmittedAnswer
     public string Answer { get; set; } = null!;
 
     [Required]
-    public DateTime SubmittedAt { get; set; } = DateTime.UtcNow;
+    public DateTime SubmittedAt { get; private set; } = DateTime.UtcNow;
 
     public EvaluationResult? EvaluationResult { get; set; }
+    
+    public IEnumerable<string> GetImmutableProperties()
+        => new[] { nameof(SubmittedAt) };
+    
 }

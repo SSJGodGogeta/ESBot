@@ -77,8 +77,7 @@ public class UserEntityTests : IDisposable
         };
         var session = new UserSession 
         { 
-            User = user, 
-            StartedAt = DateTime.UtcNow 
+            User = user
         };
 
         // Act

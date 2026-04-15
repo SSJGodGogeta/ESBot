@@ -54,7 +54,7 @@ jobs:
       run: dotnet restore
 
     - name: Build .NET API
-      run: dotnet build --no-restore
+      run: dotnet build --no-restore --configuration Release
       
     - name: Publish .NET API
       run: dotnet publish --output ./publish --no-build

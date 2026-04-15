@@ -105,7 +105,7 @@ jobs:
             **Branch:** ${{ github.ref_name }}
             **Commit:** ${{ github.sha }}
             **Autor:** ${{ github.actor }}
-            **Tests:**$ {{ needs.test.outputs.passed }} passed / ${{ needs.test.outputs.failed }} failed
+            **Tests:** ${{ needs.test.outputs.passed }} passed / ${{ needs.test.outputs.failed }} failed
             **Test Job:** ${{ needs.test.result }}
             **Build Job:** ${{ needs.build.result }}
             **Dauer:** ${{ steps.duration.outputs.duration }}
@@ -128,7 +128,7 @@ jobs:
             **Branch:** ${{ github.ref_name }}
             **Commit:** ${{ github.sha }}
             **Autor:** ${{ github.actor }}
-            **Tests:**$ {{ needs.test.outputs.passed }} passed / ${{ needs.test.outputs.failed }} failed
+            **Tests:** ${{ needs.test.outputs.passed }} passed / ${{ needs.test.outputs.failed }} failed
             **Test Job:** ${{ needs.test.result }}
             **Build Job:** ${{ needs.build.result }}
             **Dauer:** ${{ steps.duration.outputs.duration }}

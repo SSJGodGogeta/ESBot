@@ -17,7 +17,7 @@ public class UserSessionsController(EsBotDbContext context): BaseController<User
     public IActionResult Create([FromBody] UserSession userSession) => base.CreateEntityAndRespond(userSession);
 
     
-    [HttpDelete]
+    [HttpDelete("{id:guid}")]
     public IActionResult Delete(Guid id) => base.DeleteEntityAndRespond(id);
 
     

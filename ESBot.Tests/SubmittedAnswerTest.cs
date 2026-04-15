@@ -69,6 +69,89 @@ public class SubmittedAnswerEntityTests : IDisposable
         Assert.Throws<DbUpdateException>(() => _context.SaveChanges());
     }
 
+    [Fact]
+    public void SubmittedAnswer_Validation_AnswerLongerThanMaxLength_ShouldFail()
+    {
+        var answer = new SubmittedAnswer { Answer = new string('a', 2001) };
+
+        var validationContext = new ValidationContext(answer);
+        var validationResults = new List<ValidationResult>();
+
+        bool isValid = Validator.TryValidateObject(answer, validationContext, validationResults, true);
+
+        Assert.False(isValid);
+        Assert.Contains(validationResults, v => v.MemberNames.Contains(nameof(SubmittedAnswer.Answer)));
+    }
+
+    [Fact]
+    public void SubmittedAnswer_Validation_AnswerAtMaxLength_ShouldSucceed()
+    {
+        var answer = new SubmittedAnswer { Answer = new string('a', 2000) };
+
+        var validationContext = new ValidationContext(answer);
+        var validationResults = new List<ValidationResult>();
+
+        bool isValid = Validator.TryValidateObject(answer, validationContext, validationResults, true);
+
+        Assert.True(isValid);
+        Assert.Empty(validationResults);
+    }
+
+    [Fact]
+    public void SubmittedAnswer_Creation_WithoutEvaluationResult_ShouldSucceed()
+    {
+        var user = new User { Username = "optional-eval", Email = "optional-eval@example.com", HashedPassword = "password" };
+        var session = new UserSession { User = user };
+        var request = new QuizRequest { Session = session, Topic = "Geo", Difficulty = EDifficulty.Easy };
+        var item = new QuizItem { QuizRequest = request, Question = "Where?", CorrectAnswer = "Here" };
+        var answer = new SubmittedAnswer { QuizItem = item, Answer = "Here" };
+
+        _context.Users.Add(user);
+        _context.UserSessions.Add(session);
+        _context.QuizRequests.Add(request);
+        _context.QuizItems.Add(item);
+        _context.SubmittedAnswers.Add(answer);
+        _context.SaveChanges();
+
+        var saved = _context.SubmittedAnswers.Include(sa => sa.EvaluationResult).First(sa => sa.Id == answer.Id);
+        Assert.Null(saved.EvaluationResult);
+    }
+
+    [Fact]
+    public void SubmittedAnswer_Relationships_EvaluationResultAssociation_ShouldBeConsistent()
+    {
+        var user = new User { Username = "saevaluser", Email = "saeval@example.com", HashedPassword = "password" };
+        var session = new UserSession { User = user };
+        var request = new QuizRequest { Session = session, Topic = "Geo", Difficulty = EDifficulty.Easy };
+        var item = new QuizItem { QuizRequest = request, Question = "Where?", CorrectAnswer = "Here" };
+        var answer = new SubmittedAnswer { QuizItem = item, Answer = "Here" };
+        var evaluationResult = new EvaluationResult
+        {
+            SubmittedAnswer = answer,
+            IsCorrect = true,
+            Score = 1.0,
+            Feedback = "Correct"
+        };
+
+        answer.EvaluationResult = evaluationResult;
+
+        _context.Users.Add(user);
+        _context.UserSessions.Add(session);
+        _context.QuizRequests.Add(request);
+        _context.QuizItems.Add(item);
+        _context.SubmittedAnswers.Add(answer);
+        _context.EvaluationResults.Add(evaluationResult);
+        _context.SaveChanges();
+
+        var saved = _context.SubmittedAnswers
+            .Include(sa => sa.EvaluationResult)
+            .First(sa => sa.Id == answer.Id);
+
+        Assert.NotNull(saved.EvaluationResult);
+        Assert.Equal(answer.Id, saved.EvaluationResult!.SubmittedAnswerId);
+        Assert.True(saved.EvaluationResult.IsCorrect);
+    }
+    
     public void Dispose()
     {
         _context.Dispose();

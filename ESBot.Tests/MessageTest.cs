@@ -63,6 +63,56 @@ public class MessageEntityTests : IDisposable
     }
 
     [Fact]
+    public void Message_Validation_EmptyContent_ShouldFail()
+    {
+        var message = new Message { Content = string.Empty, Role = EMessageRole.User };
+
+        var validationContext = new ValidationContext(message);
+        var validationResults = new List<ValidationResult>();
+
+        bool isValid = Validator.TryValidateObject(message, validationContext, validationResults, true);
+
+        Assert.False(isValid);
+        Assert.Contains(validationResults, v => v.MemberNames.Contains(nameof(Message.Content)));
+    }
+
+    [Fact]
+    public void Message_Validation_ContentLongerThanMaxLength_ShouldFail()
+    {
+        var message = new Message
+        {
+            Content = new string('x', 4001),
+            Role = EMessageRole.Bot
+        };
+
+        var validationContext = new ValidationContext(message);
+        var validationResults = new List<ValidationResult>();
+
+        bool isValid = Validator.TryValidateObject(message, validationContext, validationResults, true);
+
+        Assert.False(isValid);
+        Assert.Contains(validationResults, v => v.MemberNames.Contains(nameof(Message.Content)));
+    }
+    
+    [Fact]
+    public void Message_Validation_ContentAtMaxLength_ShouldSucceed()
+    {
+        var message = new Message
+        {
+            Content = new string('x', 4000),
+            Role = EMessageRole.User
+        };
+
+        var validationContext = new ValidationContext(message);
+        var validationResults = new List<ValidationResult>();
+
+        bool isValid = Validator.TryValidateObject(message, validationContext, validationResults, true);
+
+        Assert.True(isValid);
+        Assert.Empty(validationResults);
+    }
+
+    [Fact]
     public void Message_Relationships_SessionAssociation_ShouldBeConsistent()
     {
         var user = new User { Username = "msguser", Email = "u@example.com", HashedPassword = "pw" };

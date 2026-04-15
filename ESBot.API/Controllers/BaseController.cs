@@ -51,6 +51,7 @@ public abstract partial class BaseController<TEntity>(EsBotDbContext context) : 
     {
         try
         {
+            if (id == Guid.Empty) return BadRequest($"{typeof(TEntity).Name} ID must not be empty.");
             TEntity? entity = GetEntityById(id);
             if (entity is null) return NotFound($"Could not find {typeof(TEntity).Name} by ID {id}");
             var result = DeleteEntityAndSave(entity);
@@ -80,6 +81,7 @@ public abstract partial class BaseController<TEntity>(EsBotDbContext context) : 
     {
         try
         {
+            if (id == Guid.Empty) return BadRequest($"{typeof(TEntity).Name} ID must not be empty.");
             if (!ModelState.IsValid) return BadRequest(ModelState);
             TEntity? existingEntity = GetEntityById(id);
             if (existingEntity == null) return NotFound($"{typeof(TEntity).Name} with ID {id} not found.");
@@ -91,7 +93,9 @@ public abstract partial class BaseController<TEntity>(EsBotDbContext context) : 
             if (idProp == null)
                 return BadRequest("Could not identify ID property on entity. Please check the name and the naming conventions");
             var updatedIdValue = idProp.GetValue(updatedEntity);
-            if (!id.Equals(updatedIdValue))
+            if (updatedIdValue is not Guid updatedGuid)
+                return BadRequest("The entity ID must be a Guid.");
+            if (id != updatedGuid)
                 return BadRequest($"The ID in the body does not match the ID in the URL. Body ID/URL ID: {updatedIdValue}/{id}");
 
             var result = UpdateEntityAndSave(existingEntity, updatedEntity);

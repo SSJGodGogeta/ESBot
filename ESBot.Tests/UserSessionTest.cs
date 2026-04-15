@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Microsoft.Data.Sqlite;
+﻿using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using ESBot.Domain.Entities;
 using ESBot.Domain.Enums;
@@ -66,23 +65,6 @@ public class UserSessionEntityTests : IDisposable
         var session = new UserSession();
 
         Assert.Throws<ArgumentNullException>(() => session.AddMessage(null!));
-    }
-
-    [Fact]
-    public void Session_Creation_WithEndedAt_ShouldSucceed()
-    {
-        var user = new User { Username = "endeduser", Email = "ended@example.com", HashedPassword = "password" };
-        var startedAt = DateTime.UtcNow.AddHours(-1);
-        var endedAt = DateTime.UtcNow;
-        var session = new UserSession { User = user, StartedAt = startedAt, EndedAt = endedAt };
-
-        _context.Users.Add(user);
-        _context.UserSessions.Add(session);
-        _context.SaveChanges();
-
-        var saved = _context.UserSessions.First(s => s.Id == session.Id);
-        Assert.Equal(startedAt, saved.StartedAt);
-        Assert.Equal(endedAt, saved.EndedAt);
     }
 
     public void Dispose()

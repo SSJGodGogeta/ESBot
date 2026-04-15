@@ -22,10 +22,8 @@ public abstract partial class BaseController<TEntity>(EsBotDbContext context) : 
     /// Creates a new entity in the database.
     /// </summary>
     /// <param name="entity">The Entity to be created, retrieved from the body</param>
-    /// <param name="bypassAuth">If the authorization should be skipped</param>
-    /// <param name="bypassPerm">If the authorization should be skipped</param>
     /// <returns>An IActionResult indicating the outcome of the creation request.</returns>
-    protected IActionResult CreateEntityAndRespond([FromBody] TEntity entity, bool bypassAuth=true, bool bypassPerm=true)
+    protected IActionResult CreateEntityAndRespond([FromBody] TEntity entity)
     {
         try
         {
@@ -44,10 +42,8 @@ public abstract partial class BaseController<TEntity>(EsBotDbContext context) : 
     /// Deletes the entity from the database by its id.
     /// </summary>
     /// <param name="id">The ID of the entity to delete</param>
-    /// <param name="bypassAuth">If the authorization should be skipped</param>
-    /// <param name="bypassPerm">If the authorization should be skipped</param>
     /// <returns>An IActionResult indicating the outcome of the creation request.</returns>
-    protected IActionResult DeleteEntityAndRespond(Guid id, bool bypassAuth=true, bool bypassPerm=true)
+    protected IActionResult DeleteEntityAndRespond(Guid id)
     {
         try
         {
@@ -75,9 +71,7 @@ public abstract partial class BaseController<TEntity>(EsBotDbContext context) : 
     /// </summary>
     /// <param name="id">The id of the entity to update.</param>
     /// <param name="updatedEntity">The new entity data containing the updated scalar values.</param>
-    /// <param name="bypassAuth">If the authorization should be skipped</param>
-    /// <param name="bypassPerm">If the authorization should be skipped</param>
-    protected IActionResult UpdateEntityAndRespond(Guid id, [FromBody] TEntity updatedEntity, bool bypassAuth=true, bool bypassPerm=true)
+    protected IActionResult UpdateEntityAndRespond(Guid id, [FromBody] TEntity updatedEntity)
     {
         try
         {

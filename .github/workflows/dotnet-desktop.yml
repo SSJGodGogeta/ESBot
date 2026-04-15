@@ -9,12 +9,16 @@ on:
 env:
       Solution_Name: ESBot                         # Replace with your solution name, i.e. MyWpfApp.sln.
       Build_Directory: Build 
+      DOTNET_VERSION: 9.0.x
 
 jobs:
 
   test:
-
     runs-on: ubuntu-latest
+
+    outputs:
+      passed: ${{ steps.testresults.outputs.passed }}
+      failed: ${{ steps.testresults.outputs.failed }}
 
     steps:
     - name: Checkout
@@ -26,16 +30,23 @@ jobs:
     - name: Install .NET Core
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 9.0.x
+        dotnet-version: ${{ env.DOTNET_VERSION }}
 
     # Execute all unit tests in the solution
     - name: Execute unit tests
-      run: dotnet test
+      run: dotnet test --logger "trx;LogFileName=test_results.trx"
+
+    - name: Parse test results
+      id: testresults
+      run: |
+        PASSED=$(grep -oP 'passed="\K[0-9]+' **/*.trx | awk '{s+=$1} END {print s}')
+        FAILED=$(grep -oP 'failed="\K[0-9]+' **/*.trx | awk '{s+=$1} END {print s}')
+        
+        echo "passed=${PASSED:-0}" >> $GITHUB_OUTPUT
+        echo "failed=${FAILED:-0}" >> $GITHUB_OUTPUT
 
   build:
-
     needs: test
-
     runs-on: ubuntu-latest  # For a list of available runner types, refer to
                              # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on                # Replace with the path to your Wap project, i.e. MyWpf.App.Package\MyWpfApp.Package.wapproj.
     steps:
@@ -48,7 +59,7 @@ jobs:
     - name: Install .NET Core
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 9.0.x
+        dotnet-version: ${{ env.DOTNET_VERSION }}
 
     - name: Restore dependencies
       run: dotnet restore
@@ -72,34 +83,57 @@ jobs:
       runs-on: ubuntu-latest  # For a list of available runner types, refer to
                                # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on                # Replace with the path to your Wap project, i.e. MyWpf.App.Package\MyWpfApp.Package.wapproj.
       steps:
+      - name: Calculate duration
+        id: duration
+        run: |
+          START=$(date -d "${{ github.event.head_commit.timestamp }}" +%s)
+          END=$(date +%s)
+          DIFF=$((END-START))
+          echo "duration=${DIFF}s" >> $GITHUB_OUTPUT
+      
       - name: Discord webhook success
         if: success()
         uses: tsickert/discord-webhook@v5.0.0
         with:
           webhook-url: ${{ secrets.DISCORD_WEBHOOK }}
-          embed-title: "🚀 Build Status"
-          embed-description: |
-            **Status:** ✅ Erfolgreich
-            **Repository:** ${{ github.repository }}
-            **Branch:** ${{ github.ref_name }}
-            **Commit:** ${{ github.sha }}
-            **Autor:** ${{ github.actor }}
-            **Run:** [Details anzeigen](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          embed-title: "⚒️ Build Status"
           embed-color: 0x00ff00
           embed-timestamp: ${{ github.event.head_commit.timestamp }}
+          embed-fields: |
+            Status, ✅ Erfolgreich, true
+            Repository, ${{ github.repository }}, true
+            Branch, ${{ github.ref_name }}, true
+            Commit, ${{ github.sha }}, true
+            Autor, ${{ github.actor }}, true
+            🧪 Tests,${{ needs.test.outputs.passed }} passed / ${{ needs.test.outputs.failed }} failed,true
+            🧩 Test Job,${{ needs.test.result }},true
+            🏗 Build Job,${{ needs.build.result }},true
+            ⏱ Dauer,${{ steps.duration.outputs.duration }},true
+            🚀 Trigger,${{ github.event_name }},true
+            💻 Runner,${{ runner.os }},true
+            🟣 .NET,${{ env.DOTNET_VERSION }},true
+            📦 Artifacts,erstellt,true
+            🔗 Run,[Details anzeigen](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}),false
 
       - name: Discord webhook failure
         if: failure()
         uses: tsickert/discord-webhook@v5.0.0
         with:
           webhook-url: ${{ secrets.DISCORD_WEBHOOK }}
-          embed-title: "🚀 Build Status"
-          embed-description: |
-            **Status:** ❌ Fehlgeschlagen
-            **Repository:** ${{ github.repository }}
-            **Branch:** ${{ github.ref_name }}
-            **Commit:** ${{ github.sha }}
-            **Autor:** ${{ github.actor }}
-            **Run:** [Details anzeigen](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          embed-title: "⚒️ Build Status"
           embed-color: 0xff0000
           embed-timestamp: ${{ github.event.head_commit.timestamp }}
+          embed-fields: |
+            Status,❌ Fehlgeschlagen,true
+            Repository,${{ github.repository }},true
+            Branch,${{ github.ref_name }},true
+            Commit,${{ github.sha }},true
+            Autor,${{ github.actor }},true
+            🧪 Tests,${{ needs.test.outputs.passed }} passed / ${{ needs.test.outputs.failed }} failed,true
+            🧩 Test Job,${{ needs.test.result }},true
+            🏗 Build Job,${{ needs.build.result }},true  
+            ⏱ Dauer,${{ steps.duration.outputs.duration }},true
+            🚀 Trigger,${{ github.event_name }},true
+            💻 Runner,${{ runner.os }},true
+            🟣 .NET,${{ env.DOTNET_VERSION }},true
+            🔗 Run,[Details anzeigen](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}),false

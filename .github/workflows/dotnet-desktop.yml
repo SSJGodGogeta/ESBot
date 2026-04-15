@@ -122,7 +122,7 @@ jobs:
           embed-title: "⚒️ Build Status"
           embed-color: 0xff0000
           embed-timestamp: ${{ github.event.head_commit.timestamp }}
-          embed-fields: |
+          embed-description: |
             **Status** ❌ Fehlgeschlagen
             **Repository:** ${{ github.repository }}
             **Branch:** ${{ github.ref_name }}

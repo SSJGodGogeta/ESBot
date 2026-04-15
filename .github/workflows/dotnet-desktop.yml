@@ -99,21 +99,20 @@ jobs:
           embed-title: "⚒️ Build Status"
           embed-color: 0x00ff00
           embed-timestamp: ${{ github.event.head_commit.timestamp }}
-          embed-fields: |
-            Status, ✅ Erfolgreich, true
-            Repository, ${{ github.repository }}, true
-            Branch, ${{ github.ref_name }}, true
-            Commit, ${{ github.sha }}, true
-            Autor, ${{ github.actor }}, true
-            🧪 Tests,${{ needs.test.outputs.passed }} passed / ${{ needs.test.outputs.failed }} failed,true
-            🧩 Test Job,${{ needs.test.result }},true
-            🏗 Build Job,${{ needs.build.result }},true
-            ⏱ Dauer,${{ steps.duration.outputs.duration }},true
-            🚀 Trigger,${{ github.event_name }},true
-            💻 Runner,${{ runner.os }},true
-            🟣 .NET,${{ env.DOTNET_VERSION }},true
-            📦 Artifacts,erstellt,true
-            🔗 Run,[Details anzeigen](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}),false
+          embed-description: |
+            **Status:** ✅ Erfolgreich
+            **Repository:** ${{ github.repository }}
+            **Branch:** ${{ github.ref_name }}
+            **Commit:** ${{ github.sha }}
+            **Autor:** ${{ github.actor }}
+            **Tests:**$ {{ needs.test.outputs.passed }} passed / ${{ needs.test.outputs.failed }} failed
+            **Test Job:** ${{ needs.test.result }}
+            **Build Job:** ${{ needs.build.result }}
+            **Dauer:** ${{ steps.duration.outputs.duration }}
+            **Trigger:** ${{ github.event_name }}
+            **Runner:** ${{ runner.os }}
+            **.NET:** ${{ env.DOTNET_VERSION }}
+            **Run:** [Details anzeigen](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
 
       - name: Discord webhook failure
         if: failure()
@@ -124,16 +123,16 @@ jobs:
           embed-color: 0xff0000
           embed-timestamp: ${{ github.event.head_commit.timestamp }}
           embed-fields: |
-            Status,❌ Fehlgeschlagen,true
-            Repository,${{ github.repository }},true
-            Branch,${{ github.ref_name }},true
-            Commit,${{ github.sha }},true
-            Autor,${{ github.actor }},true
-            🧪 Tests,${{ needs.test.outputs.passed }} passed / ${{ needs.test.outputs.failed }} failed,true
-            🧩 Test Job,${{ needs.test.result }},true
-            🏗 Build Job,${{ needs.build.result }},true  
-            ⏱ Dauer,${{ steps.duration.outputs.duration }},true
-            🚀 Trigger,${{ github.event_name }},true
-            💻 Runner,${{ runner.os }},true
-            🟣 .NET,${{ env.DOTNET_VERSION }},true
-            🔗 Run,[Details anzeigen](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}),false
+            **Status** ❌ Fehlgeschlagen
+            **Repository:** ${{ github.repository }}
+            **Branch:** ${{ github.ref_name }}
+            **Commit:** ${{ github.sha }}
+            **Autor:** ${{ github.actor }}
+            **Tests:**$ {{ needs.test.outputs.passed }} passed / ${{ needs.test.outputs.failed }} failed
+            **Test Job:** ${{ needs.test.result }}
+            **Build Job:** ${{ needs.build.result }}
+            **Dauer:** ${{ steps.duration.outputs.duration }}
+            **Trigger:** ${{ github.event_name }}
+            **Runner:** ${{ runner.os }}
+            **.NET:** ${{ env.DOTNET_VERSION }}
+            **Run:** [Details anzeigen](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})

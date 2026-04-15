@@ -66,8 +66,8 @@ jobs:
         path: ./publish
 
   notification:
-  
-      needs: build
+      needs: [test, build]  # ← Wartet auf BEIDE Jobs!
+      if: always()  # ← Läuft IMMER (auch bei Fehlern)
   
       runs-on: ubuntu-latest  # For a list of available runner types, refer to
                                # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on                # Replace with the path to your Wap project, i.e. MyWpf.App.Package\MyWpfApp.Package.wapproj.
@@ -76,24 +76,30 @@ jobs:
         if: success()
         uses: tsickert/discord-webhook@v5.0.0
         with:
-          webhook-url: ${{ secrets.DISCORD_WEBHOOK_ESBOT }}
-          embed-title: Build Status
-          embed-description: Der Build war erfolgreich!
-          embed-color: 0x00ff00  # Grün
-          embed-fields: |
-            Repository: ${{ github.repository }}
-            Branch: ${{ github.ref_name }}
-            Commit: ${{ github.sha }}
+          webhook-url: ${{ secrets.DISCORD_WEBHOOK }}
+          embed-title: "🚀 Build Status"
+          embed-description: |
+            **Status:** ✅ Erfolgreich
+            **Repository:** ${{ github.repository }}
+            **Branch:** ${{ github.ref_name }}
+            **Commit:** ${{ github.sha }}
+            **Autor:** ${{ github.actor }}
+            **Run:** [Details anzeigen](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          embed-color: 0x00ff00
+          embed-timestamp: ${{ github.event.head_commit.timestamp }}
 
       - name: Discord webhook failure
         if: failure()
         uses: tsickert/discord-webhook@v5.0.0
         with:
-          webhook-url: ${{ secrets.DISCORD_WEBHOOK_ESBOT }}
-          embed-title: Build Status
-          embed-description: Der Build ist fehlgeschlagen!
-          embed-color: 0xff0000  # Grün
-          embed-fields: |
-            Repository: ${{ github.repository }}
-            Branch: ${{ github.ref_name }}
-            Commit: ${{ github.sha }}
+          webhook-url: ${{ secrets.DISCORD_WEBHOOK }}
+          embed-title: "🚀 Build Status"
+          embed-description: |
+            **Status:** ❌ Fehlgeschlagen
+            **Repository:** ${{ github.repository }}
+            **Branch:** ${{ github.ref_name }}
+            **Commit:** ${{ github.sha }}
+            **Autor:** ${{ github.actor }}
+            **Run:** [Details anzeigen](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          embed-color: 0xff0000
+          embed-timestamp: ${{ github.event.head_commit.timestamp }}

@@ -1,3 +1,5 @@
+[![.NET Core Build and Test](https://github.com/SSJGodGogeta/ESBot/actions/workflows/dotnet-desktop.yml/badge.svg)](https://github.com/SSJGodGogeta/ESBot/actions/workflows/dotnet-desktop.yml)
+
 # ESBot Setup Anleitung
 
 ## 1. Voraussetzungen

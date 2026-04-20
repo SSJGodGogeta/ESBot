@@ -9,12 +9,16 @@ on:
 env:
       Solution_Name: ESBot                         # Replace with your solution name, i.e. MyWpfApp.sln.
       Build_Directory: Build 
+      DOTNET_VERSION: 9.0.x
 
 jobs:
 
   test:
-
     runs-on: ubuntu-latest
+
+    outputs:
+      passed: ${{ steps.testresults.outputs.passed }}
+      failed: ${{ steps.testresults.outputs.failed }}
 
     steps:
     - name: Checkout
@@ -26,16 +30,35 @@ jobs:
     - name: Install .NET Core
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 9.0.x
+        dotnet-version: ${{ env.DOTNET_VERSION }}
 
     # Execute all unit tests in the solution
     - name: Execute unit tests
-      run: dotnet test
+      run: dotnet test --logger "trx;LogFileName=test_results.trx" --results-directory ./TestResults
+    
+    - name: Debug TRX location
+      run: find . -name "*.trx"
+
+    - name: Parse test results
+      id: testresults
+      run: |
+        FILE="./TestResults/test_results.trx"
+    
+        if [ ! -f "$FILE" ]; then
+          echo "TRX file not found!"
+          echo "passed=0" >> $GITHUB_OUTPUT
+          echo "failed=0" >> $GITHUB_OUTPUT
+          exit 0
+        fi
+    
+        PASSED=$(grep -oP 'passed="\K[0-9]+' "$FILE" || echo 0)
+        FAILED=$(grep -oP 'failed="\K[0-9]+' "$FILE" || echo 0)
+    
+        echo "passed=$PASSED" >> $GITHUB_OUTPUT
+        echo "failed=$FAILED" >> $GITHUB_OUTPUT
 
   build:
-
     needs: test
-
     runs-on: ubuntu-latest  # For a list of available runner types, refer to
                              # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on                # Replace with the path to your Wap project, i.e. MyWpf.App.Package\MyWpfApp.Package.wapproj.
     steps:
@@ -48,13 +71,13 @@ jobs:
     - name: Install .NET Core
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 9.0.x
+        dotnet-version: ${{ env.DOTNET_VERSION }}
 
     - name: Restore dependencies
       run: dotnet restore
 
     - name: Build .NET API
-      run: dotnet build --no-restore
+      run: dotnet build --no-restore --configuration Release
       
     - name: Publish .NET API
       run: dotnet publish --output ./publish --no-build
@@ -64,3 +87,64 @@ jobs:
       with:
         name: api-build
         path: ./publish
+
+  notification:
+      needs: [test, build]  # ← Wartet auf BEIDE Jobs!
+      if: always()  # ← Läuft IMMER (auch bei Fehlern)
+  
+      runs-on: ubuntu-latest  # For a list of available runner types, refer to
+                               # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on                # Replace with the path to your Wap project, i.e. MyWpf.App.Package\MyWpfApp.Package.wapproj.
+      steps:
+      - name: Calculate duration
+        id: duration
+        run: |
+          START=$(date -d "${{ github.event.head_commit.timestamp }}" +%s)
+          END=$(date +%s)
+          DIFF=$((END-START))
+          echo "duration=${DIFF}s" >> $GITHUB_OUTPUT
+      
+      - name: Discord webhook success
+        if: success()
+        uses: tsickert/discord-webhook@v5.0.0
+        with:
+          webhook-url: ${{ secrets.DISCORD_WEBHOOK }}
+          embed-title: "⚒️ Build Status"
+          embed-color: 0x00ff00
+          embed-timestamp: ${{ github.event.head_commit.timestamp }}
+          embed-description: |
+            **Status:** ✅ Erfolgreich
+            **Repository:** ${{ github.repository }}
+            **Branch:** ${{ github.ref_name }}
+            **Commit:** ${{ github.sha }}
+            **Autor:** ${{ github.actor }}
+            **Tests:** ${{ needs.test.outputs.passed }} passed / ${{ needs.test.outputs.failed }} failed
+            **Test Job:** ${{ needs.test.result }}
+            **Build Job:** ${{ needs.build.result }}
+            **Dauer:** ${{ steps.duration.outputs.duration }}
+            **Trigger:** ${{ github.event_name }}
+            **Runner:** ${{ runner.os }}
+            **.NET:** ${{ env.DOTNET_VERSION }}
+            **Run:** [Details anzeigen](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+      - name: Discord webhook failure
+        if: failure()
+        uses: tsickert/discord-webhook@v5.0.0
+        with:
+          webhook-url: ${{ secrets.DISCORD_WEBHOOK }}
+          embed-title: "⚒️ Build Status"
+          embed-color: 0xff0000
+          embed-timestamp: ${{ github.event.head_commit.timestamp }}
+          embed-description: |
+            **Status** ❌ Fehlgeschlagen
+            **Repository:** ${{ github.repository }}
+            **Branch:** ${{ github.ref_name }}
+            **Commit:** ${{ github.sha }}
+            **Autor:** ${{ github.actor }}
+            **Tests:** ${{ needs.test.outputs.passed }} passed / ${{ needs.test.outputs.failed }} failed
+            **Test Job:** ${{ needs.test.result }}
+            **Build Job:** ${{ needs.build.result }}
+            **Dauer:** ${{ steps.duration.outputs.duration }}
+            **Trigger:** ${{ github.event_name }}
+            **Runner:** ${{ runner.os }}
+            **.NET:** ${{ env.DOTNET_VERSION }}
+            **Run:** [Details anzeigen](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})

@@ -17,10 +17,16 @@ jobs:
     
     steps:
     - uses: actions/checkout@v4
+    
     - name: Debug files
       run: |
+        echo "Current directory:"
         pwd
-        ls -R
+        echo "Directory structure:"
+        ls -la
+        echo "ESBot.API directory:"
+        ls -la ./ESBot.API/ || echo "ESBot.API directory not found!"
+        
     - name: Build the Docker image
       run: |
         IMAGE_TAG=$(date +%s)

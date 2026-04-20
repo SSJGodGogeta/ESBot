@@ -4,6 +4,12 @@ on:
   push:
     tags:
       - 'v*'  # Trigger on version tags like v1.0.0
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Tag name for the release (e.g., v1.0.0)'
+        required: true
+        type: string
 
 jobs:
   build-and-release:
@@ -15,15 +21,15 @@ jobs:
     - name: Build the Docker image
       run: |
         IMAGE_TAG=$(date +%s)
-        docker build . --file Dockerfile --tag esbot-backend:${IMAGE_TAG}
+        docker build ./ESBot.API --file Dockerfile --tag esbot-backend:${IMAGE_TAG}
         docker save esbot-backend:${IMAGE_TAG} -o esbot-backend.tar
     
     - name: Create Release
       id: create_release
       uses: softprops/action-gh-release@v1
       with:
-        tag_name: ${{ github.ref_name }}
-        name: Release ${{ github.ref_name }}
+        tag_name: ${{ github.event.inputs.tag_name || github.ref_name }}
+        name: Release ${{ github.event.inputs.tag_name || github.ref_name }}
         draft: false
         prerelease: false
         files: |

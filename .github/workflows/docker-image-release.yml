@@ -21,8 +21,8 @@ jobs:
     - name: Build the Docker image
       run: |
         IMAGE_TAG=$(date +%s)
-        docker build ./ESBot.API --file Dockerfile --tag esbot-backend:${IMAGE_TAG}
-        docker save esbot-backend:${IMAGE_TAG} -o esbot-backend.tar
+        docker build . --file ./ESBot.API/Dockerfile --tag esbot-backend:${IMAGE_TAG}
+        docker save esbot-backend:${IMAGE_TAG} -o ../esbot-backend.tar
     
     - name: Create Release
       id: create_release

@@ -88,62 +88,51 @@ jobs:
         path: ./publish
 
   notification:
-      needs: [test, build]  # ← Wartet auf BEIDE Jobs!
-      if: always()  # ← Läuft IMMER (auch bei Fehlern)
+    needs: [test, build]
+    if: always()
+    runs-on: ubuntu-latest
   
-      runs-on: ubuntu-latest  # For a list of available runner types, refer to
-                               # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on                # Replace with the path to your Wap project, i.e. MyWpf.App.Package\MyWpfApp.Package.wapproj.
-      steps:
-      - name: Calculate duration
-        id: duration
-        run: |
-          START=$(date -d "${{ github.event.head_commit.timestamp }}" +%s)
-          END=$(date +%s)
-          DIFF=$((END-START))
-          echo "duration=${DIFF}s" >> $GITHUB_OUTPUT
-      
-      - name: Discord webhook success
-        if: ${{ needs.test.result == 'success' && needs.build.result == 'success' }}
-        uses: tsickert/discord-webhook@v5.0.0
-        with:
-          webhook-url: ${{ secrets.DISCORD_WEBHOOK }}
-          embed-title: "⚒️ Build Status"
-          embed-color: 0x00ff00
-          embed-timestamp: ${{ github.event.head_commit.timestamp }}
-          embed-description: |
-            **Status:** ✅ Erfolgreich
-            **Repository:** ${{ github.repository }}
-            **Branch:** ${{ github.ref_name }}
-            **Commit:** ${{ github.sha }}
-            **Autor:** ${{ github.actor }}
-            **Tests:** ${{ needs.test.outputs.passed }} passed / ${{ needs.test.outputs.failed }} failed
-            **Test Job:** ${{ needs.test.result }}
-            **Build Job:** ${{ needs.build.result }}
-            **Dauer:** ${{ steps.duration.outputs.duration }}
-            **Trigger:** ${{ github.event_name }}
-            **Runner:** ${{ runner.os }}
-            **.NET:** ${{ env.DOTNET_VERSION }}
-            **Run:** [Details anzeigen](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
-
-      - name: Discord webhook failure
-        if: ${{ needs.test.result == 'failure' || needs.build.result == 'failure' }}
-        uses: tsickert/discord-webhook@v5.0.0
-        with:
-          webhook-url: ${{ secrets.DISCORD_WEBHOOK }}
-          embed-title: "⚒️ Build Status"
-          embed-color: 0xff0000
-          embed-timestamp: ${{ github.event.head_commit.timestamp }}
-          embed-description: |
-            **Status** ❌ Fehlgeschlagen
-            **Repository:** ${{ github.repository }}
-            **Branch:** ${{ github.ref_name }}
-            **Commit:** ${{ github.sha }}
-            **Autor:** ${{ github.actor }}
-            **Tests:** ${{ needs.test.outputs.passed }} passed / ${{ needs.test.outputs.failed }} failed
-            **Test Job:** ${{ needs.test.result }}
-            **Build Job:** ${{ needs.build.result }}
-            **Dauer:** ${{ steps.duration.outputs.duration }}
-            **Trigger:** ${{ github.event_name }}
-            **Runner:** ${{ runner.os }}
-            **.NET:** ${{ env.DOTNET_VERSION }}
-            **Run:** [Details anzeigen](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+    steps:
+    - name: Determine status
+      id: status
+      run: |
+        TEST="${{ needs.test.result }}"
+        BUILD="${{ needs.build.result }}"
+  
+        if [ "$TEST" = "success" ] && [ "$BUILD" = "success" ]; then
+          echo "state=success" >> $GITHUB_OUTPUT
+        elif [ "$TEST" = "skipped" ] || [ "$BUILD" = "skipped" ] || [ "$TEST" = "cancelled" ] || [ "$BUILD" = "cancelled" ]; then
+          echo "state=skipped" >> $GITHUB_OUTPUT
+        else
+          echo "state=failure" >> $GITHUB_OUTPUT
+        fi
+  
+    - name: Discord notification
+      uses: tsickert/discord-webhook@v5.0.0
+      with:
+        webhook-url: ${{ secrets.DISCORD_WEBHOOK }}
+        embed-title: "⚒️ Build Status"
+        embed-color: >-
+          ${{ steps.status.outputs.state == 'success' && '0x00ff00'
+              || steps.status.outputs.state == 'skipped' && '0x808080'
+              || '0xff0000' }}
+  
+        embed-timestamp: ${{ github.event.head_commit.timestamp }}
+  
+        embed-description: |
+          **Status:** ${
+            steps.status.outputs.state == 'success' && '✅ Erfolgreich' ||
+            steps.status.outputs.state == 'skipped' && '⏭ Übersprungen / Abgebrochen' ||
+            '❌ Fehlgeschlagen'
+          }
+          **Repository:** ${{ github.repository }}
+          **Branch:** ${{ github.ref_name }}
+          **Commit:** ${{ github.sha }}
+          **Autor:** ${{ github.actor }}
+          **Tests:** ${{ needs.test.outputs.passed }} passed / ${{ needs.test.outputs.failed }} failed
+          **Test Job:** ${{ needs.test.result }}
+          **Build Job:** ${{ needs.build.result }}
+          **Trigger:** ${{ github.event_name }}
+          **Runner:** ${{ runner.os }}
+          **.NET:** ${{ env.DOTNET_VERSION }}
+          **Run:** [Details anzeigen](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})

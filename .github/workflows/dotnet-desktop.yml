@@ -8,6 +8,7 @@ env:
       Solution_Name: ESBot                         # Replace with your solution name, i.e. MyWpfApp.sln.
       Build_Directory: Build 
       DOTNET_VERSION: 9.0.x
+      CONFIGURATION: Release
 
 jobs:
 
@@ -32,7 +33,7 @@ jobs:
 
     # Execute all unit tests in the solution
     - name: Execute unit tests
-      run: dotnet test --logger "trx;LogFileName=test_results.trx" --results-directory ./TestResults
+      run: dotnet test --configuration $CONFIGURATION --logger "trx;LogFileName=test_results.trx" --results-directory ./TestResults
     
     - name: Debug TRX location
       run: find . -name "*.trx"
@@ -75,7 +76,7 @@ jobs:
       run: dotnet restore
 
     - name: Build .NET API
-      run: dotnet build --no-restore --configuration Release
+      run: dotnet build --configuration $CONFIGURATION --no-restore --configuration Release
       
     - name: Publish .NET API
       run: dotnet publish --output ./publish --no-build

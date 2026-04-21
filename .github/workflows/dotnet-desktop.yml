@@ -98,13 +98,19 @@ jobs:
       run: |
         TEST="${{ needs.test.result }}"
         BUILD="${{ needs.build.result }}"
-  
+    
         if [ "$TEST" = "success" ] && [ "$BUILD" = "success" ]; then
-          echo "state=success" >> $GITHUB_OUTPUT
-        elif [ "$TEST" = "skipped" ] || [ "$BUILD" = "skipped" ] || [ "$TEST" = "cancelled" ] || [ "$BUILD" = "cancelled" ]; then
-          echo "state=skipped" >> $GITHUB_OUTPUT
+          echo "label=✅ Erfolgreich" >> $GITHUB_OUTPUT
+          echo "color=0x00ff00" >> $GITHUB_OUTPUT
+          
+        elif [ "$TEST" = "skipped" ] || [ "$BUILD" = "skipped" ] || \
+             [ "$TEST" = "cancelled" ] || [ "$BUILD" = "cancelled" ]; then
+          echo "label=⏭ Übersprungen / Abgebrochen" >> $GITHUB_OUTPUT
+          echo "color=0x808080" >> $GITHUB_OUTPUT
+    
         else
-          echo "state=failure" >> $GITHUB_OUTPUT
+          echo "label=❌ Fehlgeschlagen" >> $GITHUB_OUTPUT
+          echo "color=0xff0000" >> $GITHUB_OUTPUT
         fi
   
     - name: Discord notification
@@ -112,19 +118,10 @@ jobs:
       with:
         webhook-url: ${{ secrets.DISCORD_WEBHOOK }}
         embed-title: "⚒️ Build Status"
-        embed-color: >-
-          ${{ steps.status.outputs.state == 'success' && '0x00ff00'
-              || steps.status.outputs.state == 'skipped' && '0x808080'
-              || '0xff0000' }}
-  
+        embed-color: ${{ steps.status.outputs.color }}
         embed-timestamp: ${{ github.event.head_commit.timestamp }}
-  
         embed-description: |
-          **Status:** ${
-            steps.status.outputs.state == 'success' && '✅ Erfolgreich' ||
-            steps.status.outputs.state == 'skipped' && '⏭ Übersprungen / Abgebrochen' ||
-            '❌ Fehlgeschlagen'
-          }
+          **Status:** ${{ steps.status.outputs.label }} 
           **Repository:** ${{ github.repository }}
           **Branch:** ${{ github.ref_name }}
           **Commit:** ${{ github.sha }}

@@ -46,7 +46,6 @@ Wichtige Einstellungen:
 * Visual Studio / Rider / VS Code
 * Git
 
-
 ## 2. Projekt klonen
 
 ```bash
@@ -80,9 +79,13 @@ dotnet restore
 
 ## 5. Projekt bauen
 
+Beim Erstellen des Projekts (Build) werden durch eine MSBuild-Konfiguration automatisch alle Unit-Tests und BDD-Tests (Behavior-Driven Development mit **Reqnroll** / Gherkin) im Hintergrund ausgeführt.
+
 ```bash
 dotnet build
 ```
+
+Falls einer der Tests fehlschlägt, bricht der Build-Prozess mit einer Fehlermeldung ab.
 
 
 ## 6. Backend starten

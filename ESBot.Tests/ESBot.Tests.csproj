@@ -28,4 +28,9 @@
     <ProjectReference Include="..\ESBot.Infrastructure\ESBot.Infrastructure.csproj" />
   </ItemGroup>
 
+  <Target Name="RunTestsAfterBuild" AfterTargets="Build">
+    <Message Text="Running tests after build..." Importance="high" />
+    <Exec Command="dotnet test --no-build --logger &quot;console;verbosity=detailed&quot;" />
+  </Target>
+
 </Project>

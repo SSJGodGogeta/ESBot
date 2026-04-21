@@ -10,9 +10,11 @@
   <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="6.0.2" />
     <PackageReference Include="FluentAssertions" Version="8.9.0" />
+    <PackageReference Include="Gherkin" Version="39.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.14" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
     <PackageReference Include="Moq" Version="4.20.72" />
+    <PackageReference Include="Reqnroll.xUnit" Version="3.3.4" />
     <PackageReference Include="xunit" Version="2.9.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
   </ItemGroup>
@@ -25,5 +27,10 @@
     <ProjectReference Include="..\ESBot.Domain\ESBot.Domain.csproj" />
     <ProjectReference Include="..\ESBot.Infrastructure\ESBot.Infrastructure.csproj" />
   </ItemGroup>
+
+  <Target Name="RunTestsAfterBuild" AfterTargets="Build">
+    <Message Text="Running tests after build..." Importance="high" />
+    <Exec Command="dotnet test --no-build --configuration $(Configuration) --logger &quot;console;verbosity=detailed&quot;" />
+  </Target>
 
 </Project>

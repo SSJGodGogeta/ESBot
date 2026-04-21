@@ -8,6 +8,7 @@ env:
       Solution_Name: ESBot                         # Replace with your solution name, i.e. MyWpfApp.sln.
       Build_Directory: Build 
       DOTNET_VERSION: 9.0.x
+      CONFIGURATION: Release
 
 jobs:
 
@@ -32,7 +33,7 @@ jobs:
 
     # Execute all unit tests in the solution
     - name: Execute unit tests
-      run: dotnet test --logger "trx;LogFileName=test_results.trx" --results-directory ./TestResults
+      run: dotnet test --configuration $CONFIGURATION --logger "trx;LogFileName=test_results.trx" --results-directory ./TestResults
     
     - name: Debug TRX location
       run: find . -name "*.trx"
@@ -75,7 +76,7 @@ jobs:
       run: dotnet restore
 
     - name: Build .NET API
-      run: dotnet build --no-restore --configuration Release
+      run: dotnet build --configuration $CONFIGURATION --no-restore
       
     - name: Publish .NET API
       run: dotnet publish --output ./publish --no-build
@@ -87,62 +88,48 @@ jobs:
         path: ./publish
 
   notification:
-      needs: [test, build]  # ← Wartet auf BEIDE Jobs!
-      if: always()  # ← Läuft IMMER (auch bei Fehlern)
+    needs: [test, build]
+    if: always()
+    runs-on: ubuntu-latest
   
-      runs-on: ubuntu-latest  # For a list of available runner types, refer to
-                               # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on                # Replace with the path to your Wap project, i.e. MyWpf.App.Package\MyWpfApp.Package.wapproj.
-      steps:
-      - name: Calculate duration
-        id: duration
-        run: |
-          START=$(date -d "${{ github.event.head_commit.timestamp }}" +%s)
-          END=$(date +%s)
-          DIFF=$((END-START))
-          echo "duration=${DIFF}s" >> $GITHUB_OUTPUT
-      
-      - name: Discord webhook success
-        if: success()
-        uses: tsickert/discord-webhook@v5.0.0
-        with:
-          webhook-url: ${{ secrets.DISCORD_WEBHOOK }}
-          embed-title: "⚒️ Build Status"
-          embed-color: 0x00ff00
-          embed-timestamp: ${{ github.event.head_commit.timestamp }}
-          embed-description: |
-            **Status:** ✅ Erfolgreich
-            **Repository:** ${{ github.repository }}
-            **Branch:** ${{ github.ref_name }}
-            **Commit:** ${{ github.sha }}
-            **Autor:** ${{ github.actor }}
-            **Tests:** ${{ needs.test.outputs.passed }} passed / ${{ needs.test.outputs.failed }} failed
-            **Test Job:** ${{ needs.test.result }}
-            **Build Job:** ${{ needs.build.result }}
-            **Dauer:** ${{ steps.duration.outputs.duration }}
-            **Trigger:** ${{ github.event_name }}
-            **Runner:** ${{ runner.os }}
-            **.NET:** ${{ env.DOTNET_VERSION }}
-            **Run:** [Details anzeigen](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
-
-      - name: Discord webhook failure
-        if: failure()
-        uses: tsickert/discord-webhook@v5.0.0
-        with:
-          webhook-url: ${{ secrets.DISCORD_WEBHOOK }}
-          embed-title: "⚒️ Build Status"
-          embed-color: 0xff0000
-          embed-timestamp: ${{ github.event.head_commit.timestamp }}
-          embed-description: |
-            **Status** ❌ Fehlgeschlagen
-            **Repository:** ${{ github.repository }}
-            **Branch:** ${{ github.ref_name }}
-            **Commit:** ${{ github.sha }}
-            **Autor:** ${{ github.actor }}
-            **Tests:** ${{ needs.test.outputs.passed }} passed / ${{ needs.test.outputs.failed }} failed
-            **Test Job:** ${{ needs.test.result }}
-            **Build Job:** ${{ needs.build.result }}
-            **Dauer:** ${{ steps.duration.outputs.duration }}
-            **Trigger:** ${{ github.event_name }}
-            **Runner:** ${{ runner.os }}
-            **.NET:** ${{ env.DOTNET_VERSION }}
-            **Run:** [Details anzeigen](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+    steps:
+    - name: Determine status
+      id: status
+      run: |
+        TEST="${{ needs.test.result }}"
+        BUILD="${{ needs.build.result }}"
+    
+        if [ "$TEST" = "success" ] && [ "$BUILD" = "success" ]; then
+          echo "label=✅ Erfolgreich" >> $GITHUB_OUTPUT
+          echo "color=65280" >> $GITHUB_OUTPUT
+          
+        elif [ "$TEST" = "skipped" ] || [ "$BUILD" = "skipped" ] || \
+             [ "$TEST" = "cancelled" ] || [ "$BUILD" = "cancelled" ]; then
+          echo "label=⏭ Übersprungen / Abgebrochen" >> $GITHUB_OUTPUT
+          echo "color=8421504" >> $GITHUB_OUTPUT
+    
+        else
+          echo "label=❌ Fehlgeschlagen" >> $GITHUB_OUTPUT
+          echo "color=16711680" >> $GITHUB_OUTPUT
+        fi
+  
+    - name: Discord notification
+      uses: tsickert/discord-webhook@v5.0.0
+      with:
+        webhook-url: ${{ secrets.DISCORD_WEBHOOK }}
+        embed-title: "⚒️ Build Status"
+        embed-color: ${{ steps.status.outputs.color }}
+        embed-timestamp: ${{ github.event.head_commit.timestamp }}
+        embed-description: |
+          **Status:** ${{ steps.status.outputs.label }} 
+          **Repository:** ${{ github.repository }}
+          **Branch:** ${{ github.ref_name }}
+          **Commit:** ${{ github.sha }}
+          **Autor:** ${{ github.actor }}
+          **Tests:** ${{ needs.test.outputs.passed }} passed / ${{ needs.test.outputs.failed }} failed
+          **Test Job:** ${{ needs.test.result }}
+          **Build Job:** ${{ needs.build.result }}
+          **Trigger:** ${{ github.event_name }}
+          **Runner:** ${{ runner.os }}
+          **.NET:** ${{ env.DOTNET_VERSION }}
+          **Run:** [Details anzeigen](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})

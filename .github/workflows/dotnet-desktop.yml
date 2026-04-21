@@ -101,16 +101,16 @@ jobs:
     
         if [ "$TEST" = "success" ] && [ "$BUILD" = "success" ]; then
           echo "label=✅ Erfolgreich" >> $GITHUB_OUTPUT
-          echo "color=0x00ff00" >> $GITHUB_OUTPUT
+          echo "color=65280" >> $GITHUB_OUTPUT
           
         elif [ "$TEST" = "skipped" ] || [ "$BUILD" = "skipped" ] || \
              [ "$TEST" = "cancelled" ] || [ "$BUILD" = "cancelled" ]; then
           echo "label=⏭ Übersprungen / Abgebrochen" >> $GITHUB_OUTPUT
-          echo "color=0x808080" >> $GITHUB_OUTPUT
+          echo "color=8421504" >> $GITHUB_OUTPUT
     
         else
           echo "label=❌ Fehlgeschlagen" >> $GITHUB_OUTPUT
-          echo "color=0xff0000" >> $GITHUB_OUTPUT
+          echo "color=16711680" >> $GITHUB_OUTPUT
         fi
   
     - name: Discord notification

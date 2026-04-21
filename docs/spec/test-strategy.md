@@ -32,3 +32,6 @@ Testing against a live AI model (like OpenAI or local LLMs) introduces three maj
 By designing the system to use "mock AI providers" instead of live models during tests, our BDD tests become entirely predictable, instant, and completely free of external dependencies (and cost). 
 
 Because we do not have to wait for a real AI to generate a response, our acceptance test execution time is nearly indistinguishable from regular integration or unit tests. This makes running BDD tests alongside unit tests on every single commit not only feasible but highly efficient.
+
+
+_Note:_ For this task we used ChatGPT-5.3 in order to improve code quality and understand the usage of ReqnRoll. We also used it to improve our writing for task 5.3 (grammar etc.).

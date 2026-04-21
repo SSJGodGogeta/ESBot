@@ -30,7 +30,7 @@
 
   <Target Name="RunTestsAfterBuild" AfterTargets="Build">
     <Message Text="Running tests after build..." Importance="high" />
-    <Exec Command="dotnet test --no-build --logger &quot;console;verbosity=detailed&quot;" />
+    <Exec Command="dotnet test --no-build --configuration Release --logger &quot;console;verbosity=detailed&quot;" />
   </Target>
 
 </Project>

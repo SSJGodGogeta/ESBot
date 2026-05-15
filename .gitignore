@@ -7,3 +7,5 @@
 **/Debug/*
 **/Debug/**
 **/*.feature.cs
+.direnv/
+flake.lock

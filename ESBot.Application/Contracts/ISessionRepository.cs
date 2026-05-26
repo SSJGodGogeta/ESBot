@@ -4,7 +4,19 @@ namespace ESBot.Application.Contracts;
 
 public interface ISessionRepository
 {
+    UserSession CreateSession(UserSession session);
+
     UserSession? FindSessionById(Guid sessionId);
+
+    IReadOnlyList<UserSession> FindSessionsByUser(Guid userId);
+
+    void AppendMessage(Guid sessionId, Message message);
+
+    IReadOnlyList<Message> GetMessageHistory(Guid sessionId);
+
+    UserSession UpdateSessionEndTime(Guid sessionId, DateTime? endedAt);
+
+    bool DeleteSession(Guid sessionId);
 
     QuizItem? FindQuizItemById(Guid quizItemId);
 

@@ -27,7 +27,7 @@ public abstract partial class BaseController<TEntity>(EsBotDbContext context) : 
     {
         try
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+            if (!ModelState.IsValid) return UnprocessableEntity(ModelState);
             var result = CreateAndSaveEntity(entity);
             if(result.Item1) return StatusCode(StatusCodes.Status201Created, entity);
             return StatusCode(409, $"Could not create entity of type {typeof(TEntity).Name}\nAn Exception occurred: Type - {result.Item2!.GetType()}, Message - {result.Item2.Message}");
@@ -76,7 +76,7 @@ public abstract partial class BaseController<TEntity>(EsBotDbContext context) : 
         try
         {
             if (id == Guid.Empty) return BadRequest($"{typeof(TEntity).Name} ID must not be empty.");
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+            if (!ModelState.IsValid) return UnprocessableEntity(ModelState);
             TEntity? existingEntity = GetEntityById(id);
             if (existingEntity == null) return NotFound($"{typeof(TEntity).Name} with ID {id} not found.");
         

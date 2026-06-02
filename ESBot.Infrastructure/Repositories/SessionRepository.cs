@@ -7,7 +7,7 @@ namespace ESBot.Infrastructure.Repositories;
 
 public class SessionRepository(EsBotDbContext context) : ISessionRepository
 {
-    public UserSession CreateSession(UserSession session)
+    public Session CreateSession(Session session)
     {
         ArgumentNullException.ThrowIfNull(session);
 
@@ -16,10 +16,10 @@ public class SessionRepository(EsBotDbContext context) : ISessionRepository
         return session;
     }
 
-    public UserSession? FindSessionById(Guid sessionId)
+    public Session? FindSessionById(Guid sessionId)
         => context.UserSessions.SingleOrDefault(session => session.Id == sessionId);
 
-    public IReadOnlyList<UserSession> FindSessionsByUser(Guid userId)
+    public IReadOnlyList<Session> FindSessionsByUser(Guid userId)
         => context.UserSessions
             .Where(session => session.UserId == userId)
             .OrderByDescending(session => session.StartedAt)
@@ -43,7 +43,7 @@ public class SessionRepository(EsBotDbContext context) : ISessionRepository
             .OrderBy(message => message.CreatedAt)
             .ToList();
 
-    public UserSession UpdateSessionEndTime(Guid sessionId, DateTime? endedAt)
+    public Session UpdateSessionEndTime(Guid sessionId, DateTime? endedAt)
     {
         var session = FindRequiredSession(sessionId);
         session.EndedAt = endedAt;
@@ -67,7 +67,7 @@ public class SessionRepository(EsBotDbContext context) : ISessionRepository
             .Include(item => item.QuizRequest)
             .SingleOrDefault(item => item.Id == quizItemId);
 
-    public void AddSession(UserSession session)
+    public void AddSession(Session session)
         => context.UserSessions.Add(session);
 
     public void AddMessage(Message message)
@@ -88,7 +88,7 @@ public class SessionRepository(EsBotDbContext context) : ISessionRepository
     public void SaveChanges()
         => context.SaveChanges();
 
-    private UserSession FindRequiredSession(Guid sessionId)
+    private Session FindRequiredSession(Guid sessionId)
         => FindSessionById(sessionId)
             ?? throw new KeyNotFoundException($"Session '{sessionId}' was not found.");
 }

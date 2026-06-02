@@ -29,7 +29,7 @@ public class EvaluationResultEntityTests : IDisposable
     public void EvaluationResult_Creation_WithValidData_ShouldSucceed()
     {
         var user = new User { Username = "eruser", Email = "er@example.com", HashedPassword = "pw" };
-        var session = new UserSession { User = user };
+        var session = new Session { User = user };
         var request = new QuizRequest { Session = session, Topic = "Sci", Difficulty = EDifficulty.Hard };
         var item = new QuizItem { QuizRequest = request, Question = "Why?", CorrectAnswer = "Because" };
         var answer = new SubmittedAnswer { QuizItem = item, Answer = "Because" };
@@ -64,7 +64,7 @@ public class EvaluationResultEntityTests : IDisposable
     public void EvaluationResult_Creation_WithoutFeedback_ShouldSucceed()
     {
         var user = new User { Username = "sieuser", Email = "sie@example.com", HashedPassword = "pw" };
-        var session = new UserSession { User = user };
+        var session = new Session { User = user };
         var request = new QuizRequest { Session = session, Topic = "Sci", Difficulty = EDifficulty.Hard };
         var item = new QuizItem { QuizRequest = request, Question = "Why?", CorrectAnswer = "Because" };
         var answer = new SubmittedAnswer { QuizItem = item, Answer = "Because" };
@@ -88,7 +88,7 @@ public class EvaluationResultEntityTests : IDisposable
     public void EvaluationResult_Creation_WithNegativeScore_ShouldSucceed()
     {
         var user = new User { Username = "negscoreuser", Email = "negscore@example.com", HashedPassword = "password" };
-        var session = new UserSession { User = user };
+        var session = new Session { User = user };
         var request = new QuizRequest { Session = session, Topic = "Sci", Difficulty = EDifficulty.Hard };
         var item = new QuizItem { QuizRequest = request, Question = "Why?", CorrectAnswer = "Because" };
         var answer = new SubmittedAnswer { QuizItem = item, Answer = "Because" };
@@ -110,7 +110,7 @@ public class EvaluationResultEntityTests : IDisposable
     public void EvaluationResult_Creation_WithScoreGreaterThanOne_ShouldSucceed()
     {
         var user = new User { Username = "highscoreuser", Email = "highscore@example.com", HashedPassword = "password" };
-        var session = new UserSession { User = user };
+        var session = new Session { User = user };
         var request = new QuizRequest { Session = session, Topic = "Sci", Difficulty = EDifficulty.Hard };
         var item = new QuizItem { QuizRequest = request, Question = "Why?", CorrectAnswer = "Because" };
         var answer = new SubmittedAnswer { QuizItem = item, Answer = "Because" };

@@ -22,7 +22,7 @@ public class ChatServiceTests
 
         Assert.Equal(userId, session.UserId);
         Assert.Empty(session.Messages);
-        _repository.Verify(r => r.AddSession(It.Is<UserSession>(s => s == session && s.UserId == userId)), Times.Once);
+        _repository.Verify(r => r.AddSession(It.Is<Session>(s => s == session && s.UserId == userId)), Times.Once);
         _repository.Verify(r => r.SaveChanges(), Times.Once);
         _llmService.VerifyNoOtherCalls();
     }
@@ -172,9 +172,9 @@ public class ChatServiceTests
 
     private ChatService CreateService() => new(_repository.Object, _llmService.Object);
 
-    private static UserSession NewSession() => new() { Id = Guid.NewGuid(), UserId = Guid.NewGuid() };
+    private static Session NewSession() => new() { Id = Guid.NewGuid(), UserId = Guid.NewGuid() };
 
-    private static QuizItem NewQuestion(UserSession session)
+    private static QuizItem NewQuestion(Session session)
     {
         var quiz = new QuizRequest
         {

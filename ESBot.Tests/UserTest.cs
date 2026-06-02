@@ -132,7 +132,7 @@ public class UserEntityTests : IDisposable
             Email = "kevin@test.com",
             HashedPassword = "pw",
         };
-        var session = new UserSession 
+        var session = new Session 
         { 
             User = user
         };

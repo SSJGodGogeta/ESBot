@@ -13,12 +13,12 @@ public class ChatService(ISessionRepository repository, ILlmService llmService)
     public const string UnavailableFeedback =
         "Feedback is currently unavailable. Please try again later.";
 
-    public UserSession StartNewLearningSession(Guid userId)
+    public Session StartNewLearningSession(Guid userId)
     {
         if (userId == Guid.Empty)
             throw new ArgumentException("A user ID is required.", nameof(userId));
 
-        var session = new UserSession { UserId = userId };
+        var session = new Session { UserId = userId };
 
         repository.AddSession(session);
         repository.SaveChanges();
@@ -162,7 +162,7 @@ public class ChatService(ISessionRepository repository, ILlmService llmService)
         return result;
     }
 
-    private UserSession GetRequiredSession(Guid sessionId)
+    private Session GetRequiredSession(Guid sessionId)
     {
         if (sessionId == Guid.Empty)
             throw new ArgumentException("A session ID is required.", nameof(sessionId));
@@ -171,7 +171,7 @@ public class ChatService(ISessionRepository repository, ILlmService llmService)
             ?? throw new KeyNotFoundException($"Session '{sessionId}' was not found.");
     }
 
-    private void AddMessage(UserSession session, Message message)
+    private void AddMessage(Session session, Message message)
     {
         session.AddMessage(message);
         repository.AddMessage(message);

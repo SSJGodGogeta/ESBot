@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ESBot.API.Filter.Entities;
 
-public class UserSessionFilter : IEntityFilter<UserSession>
+public class SessionFilter : IEntityFilter<Session>
 {
     public Guid? Id { get; set; }
     public Guid? UserId { get; set; }
@@ -17,7 +17,7 @@ public class UserSessionFilter : IEntityFilter<UserSession>
     public bool IncludeMessages { get; set; } = false;
     public bool IncludeQuizRequests { get; set; } = false;
 
-    public async Task<List<UserSession>> Apply(IQueryable<UserSession> query)
+    public async Task<List<Session>> Apply(IQueryable<Session> query)
     {
         // =====================
         // FILTERS

@@ -28,7 +28,7 @@ public class UserSessionEntityTests : IDisposable
     public void Session_Creation_WithValidData_ShouldSucceed()
     {
         var user = new User { Username = "suser", Email = "s@example.com", HashedPassword = "pw" };
-        var session = new UserSession { User = user };
+        var session = new Session { User = user };
 
         _context.Users.Add(user);
         _context.UserSessions.Add(session);
@@ -44,7 +44,7 @@ public class UserSessionEntityTests : IDisposable
     public void Session_Helper_AddMessage_ShouldLinkBothSides()
     {
         var user = new User { Username = "smsguser", Email = "su@example.com", HashedPassword = "pw" };
-        var session = new UserSession { User = user };
+        var session = new Session { User = user };
         var message = new Message { Content = "hi", Role = EMessageRole.User };
 
         session.AddMessage(message);
@@ -62,7 +62,7 @@ public class UserSessionEntityTests : IDisposable
     [Fact]
     public void Session_Helper_AddMessage_WithNullMessage_ShouldThrow()
     {
-        var session = new UserSession();
+        var session = new Session();
 
         Assert.Throws<ArgumentNullException>(() => session.AddMessage(null!));
     }

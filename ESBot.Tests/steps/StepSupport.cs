@@ -33,7 +33,7 @@ public sealed class StepSupportHooks(ScenarioContext scenarioContext)
             HashedPassword = "password123"
         };
 
-        var session = new UserSession
+        var session = new Session
         {
             User = user
         };

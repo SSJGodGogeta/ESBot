@@ -7,14 +7,14 @@ namespace ESBot.API.Controllers.v1;
 
 [Route("/v1/[controller]")]
 [ApiController]
-public class UserSessionsController(EsBotDbContext context): BaseController<UserSession>(context), IController<UserSession, UserSessionFilter>
+public class SessionsController(EsBotDbContext context): BaseController<Session>(context), IController<Session, SessionFilter>
 {
  
     [HttpGet]
-    public Task<IActionResult> Filter([FromQuery] UserSessionFilter filter) => base.FilterEntities(filter);
+    public Task<IActionResult> Filter([FromQuery] SessionFilter filter) => base.FilterEntities(filter);
     
     [HttpPost]
-    public IActionResult Create([FromBody] UserSession userSession) => base.CreateEntityAndRespond(userSession);
+    public IActionResult Create([FromBody] Session session) => base.CreateEntityAndRespond(session);
 
     
     [HttpDelete]
@@ -22,6 +22,6 @@ public class UserSessionsController(EsBotDbContext context): BaseController<User
 
     
     [HttpPut]
-    public IActionResult Update(Guid id, [FromBody] UserSession userSession) => base.UpdateEntityAndRespond(id, userSession);
+    public IActionResult Update(Guid id, [FromBody] Session session) => base.UpdateEntityAndRespond(id, session);
     
 }

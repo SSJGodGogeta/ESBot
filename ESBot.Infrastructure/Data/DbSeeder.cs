@@ -34,12 +34,12 @@ public static class DbSeeder
         // =====================
         // SESSIONS
         // =====================
-        var session1 = new UserSession
+        var session1 = new Session
         {
             UserId = user1.Id
         };
 
-        var session2 = new UserSession
+        var session2 = new Session
         {
             UserId = user2.Id,
         };

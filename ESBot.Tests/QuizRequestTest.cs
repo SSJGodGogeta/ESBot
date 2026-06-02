@@ -29,7 +29,7 @@ public class QuizRequestEntityTests : IDisposable
     public void QuizRequest_Creation_WithValidData_ShouldSucceed()
     {
         var user = new User { Username = "qruser", Email = "qr@example.com", HashedPassword = "pw" };
-        var session = new UserSession { User = user };
+        var session = new Session { User = user };
         var request = new QuizRequest { Session = session, Topic = "Math", Difficulty = EDifficulty.Easy };
 
         _context.Users.Add(user);
@@ -99,7 +99,7 @@ public class QuizRequestEntityTests : IDisposable
         // Verifies the one-to-many EF relationship: the parent QuizRequest must expose the child QuizItem
         // through its QuizItems collection, and the child must reference the same parent via QuizRequestId.
         var user = new User { Username = "qreluser", Email = "qrel@example.com", HashedPassword = "password" };
-        var session = new UserSession { User = user };
+        var session = new Session { User = user };
         var request = new QuizRequest { Session = session, Topic = "Math", Difficulty = EDifficulty.Easy };
         var item = new QuizItem { QuizRequest = request, Question = "2+2?", CorrectAnswer = "4" };
 

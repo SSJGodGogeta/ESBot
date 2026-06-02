@@ -15,7 +15,7 @@ public class QuizRequest : IImmutableProperties
     [Required]
     public Guid SessionId { get; set; }
 
-    public UserSession Session { get; set; } = null!;
+    public Session Session { get; set; } = null!;
 
     [Required]
     [MaxLength(200)]

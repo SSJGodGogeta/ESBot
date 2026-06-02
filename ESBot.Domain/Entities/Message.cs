@@ -15,7 +15,7 @@ public class Message : IImmutableProperties
     [Required]
     public Guid SessionId { get; set; }
 
-    public UserSession Session { get; set; } = null!;
+    public Session Session { get; set; } = null!;
 
     [Required]
     [MinLength(1)]

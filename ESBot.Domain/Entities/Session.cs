@@ -7,7 +7,7 @@ namespace ESBot.Domain.Entities;
 /// Represents a single learning session of a user.
 /// A session groups all messages, quiz requests, and interactions within a specific learning context.
 /// </summary>
-public class UserSession : IImmutableProperties
+public class Session : IImmutableProperties
 {
     public Guid Id { get; set; } = Guid.NewGuid();
 

@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <ProjectReference Include="..\ESBot.Application\ESBot.Application.csproj" />
     <ProjectReference Include="..\ESBot.Domain\ESBot.Domain.csproj" />
   </ItemGroup>
 

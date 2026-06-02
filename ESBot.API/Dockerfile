@@ -8,6 +8,7 @@ FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["ESBot.API/ESBot.API.csproj", "ESBot.API/"]
+COPY ["ESBot.Application/ESBot.Application.csproj", "ESBot.Application/"]
 COPY ["ESBot.Domain/ESBot.Domain.csproj", "ESBot.Domain/"]
 COPY ["ESBot.Infrastructure/ESBot.Infrastructure.csproj", "ESBot.Infrastructure/"]
 RUN dotnet restore "ESBot.API/ESBot.API.csproj"

@@ -24,6 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ESBot.Application\ESBot.Application.csproj" />
     <ProjectReference Include="..\ESBot.Domain\ESBot.Domain.csproj" />
     <ProjectReference Include="..\ESBot.Infrastructure\ESBot.Infrastructure.csproj" />
   </ItemGroup>

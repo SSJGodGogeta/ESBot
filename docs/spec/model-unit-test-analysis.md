@@ -2,43 +2,186 @@
 
 ## Approach
 
-We looked at the validation attributes and relationships in the domain models
-and compared them with the xUnit tests that already exist. For the review we
-used:
+For this review we looked at the validation attributes, relationships and helper methods in the domain models. Then we compared those rules with the existing unit tests.
+We did not use every technique for every class. Just the technique that made the most sense for the shape of the model. Some of them would be:
 
-- **Equivalence classes**: valid input, missing input and invalid relations
-- **Boundary values**: empty text, maximum allowed length and one above it
-- **State combinations**: for example an active/ended session or an answer
-  with/without an evaluation result
+- **Equivalence Partitioning**
+- **Boundary Value Analysis**
+- **Decision Table Testing**
+- **Experience-Based Testing**
 
-## Findings
+
+Notice: Codex has been used to summarize and organize the findings, but the actual analysis was done manually by reviewing the code and tests.
+It was additionally used at the end to point out some of the uncovered cases that we might have missed.
+
+
+
+## Analysis
 
 ### UserSession
-- Valid combinations: Partly covered. Creating a session and adding a message are tested. A finished session with an EndedAt value is not tested
-- Boundaries: There is no test for the timestamp order
-- Invalid inputs: A null message is tested, but a session where EndedAt is before StartedAt is not tested
+|                                       | Rule 1  | Rule 2  | Rule 3  | Rule 4  | Rule 5  | Rule 6  |
+|---------------------------------------|---------|---------|---------|---------|---------|---------|
+| **Conditions**                        |         |         |         |         |         |         |
+| User is linked                        | Y       | Y       | Y       | Y       | -       | N       |
+| EndedAt is set                        | N       | Y       | Y       | -       | -       | -       |
+| EndedAt is after StartedAt            | -       | Y       | N       | -       | -       | -       |
+| Message passed to AddMessage          | -       | -       | -       | Valid   | Null    | -       |
+| **Actions**                           |         |         |         |         |         |         |
+| Save active session successfully      | X       | -       | -       | -       | -       | -       |
+| Save ended session successfully       | -       | X       | -       | -       | -       | -       |
+| Reject invalid timestamp order        | -       | -       | X       | -       | -       | -       |
+| Link message to session on both sides | -       | -       | -       | X       | -       | -       |
+| Throw ArgumentNullException           | -       | -       | -       | -       | X       | -       |
+| Reject session without user           | -       | -       | -       | -       | -       | X       |
+
+#### Coverage:
+| Rule | Covered | Not Covered | Not Enforced |
+|------|---------|-------------|--------------|
+| 1    | X       | -           | -            |
+| 2    | -       | X           | -            |
+| 3    | -       | -           | X            |
+| 4    | X       | -           | -            |
+| 5    | X       | -           | -            |
+| 6    | -       | X           | -            |
+
+Note:
+Rule 3 (enforcing timestamp order) is not currently enforced by the code, so it cannot be covered by tests until the implementation is updated.
 
 ### Message
-- Valid combinations: Partly covered. User and bot messages are used in tests, but a message without a session or with an invalid role is not checked
-- Boundaries: Empty content, length 4000 and length 4001 are tested
-- Invalid inputs: null and empty content are tested, but whitespace-only content is not
+#### Equivalence Partitioning
+- **Content** property:
+  - Valid classes: `1 <= length <= 4000`
+  - Invalid classes: `length < 1`, `length > 4000` and `Content = null`
+
+- **Role** property:
+  - Valid classes: `Role = User || Bot`
+  - Invalid classes: any role outside of the valid classes
+
+#### Boundary Value Analysis
+- **Content** property:
+  - Test boundaries: `1`, `4000`
+  - Test values just outside the boundaries: `0`, `4001`
+
+#### Findings:
+**Covered cases:**
+- valid message content
+- missing content
+- content just outside the lower boundary `0` (`""`)
+- content at maximum length `4000` & above maximum length `4001`
+- valid role values and linked session
+
+
+**Not covered cases:**
+- content right at the lower boundary `1`
+- whitespace-only content such as `"   "`
+- missing session and invalid role values
 
 ### QuizRequest
-- Valid combinations: Partly covered. A normal request with linked quiz items is tested, but a missing session or invalid difficulty is not
-- Boundaries: Topic lengths 200 and 201 are tested. Empty or whitespace-only topics are not tested
-- Invalid inputs: A missing topic is tested, but invalid relations and invalid enum values are not
+#### Equivalence Partitioning
+- **Topic** property:
+  - Valid classes: `1 <= length <= 200`
+  - Invalid classes: `length < 1`, `length > 200` and `Topic = null`
+
+- **Difficulty** property:
+  - Valid classes: `Difficulty = Easy || Medium || Hard`
+  - Invalid classes: any difficulty outside the valid classes
+
+
+#### Boundary Value Analysis
+- **Topic** property:
+  - Test boundaries: `1`, `200`
+  - Test values just outside the boundaries: `0`, `201`
+
+
+#### Findings:
+**Covered cases:**
+
+- valid topic
+- missing topic
+- topic at maximum length `200`
+- topic above maximum length `201`
+- valid difficulty and linked quiz items
+
+
+**Not covered cases:**
+
+- topic right at the lower boundary `1`
+- topic just outside the lower boundary `0` (`""`)
+- whitespace-only topic such as `"   "`
+- missing session and invalid difficulty values
+
+
 
 ### QuizItem
-- Valid combinations: Partly covered. A valid item and its submitted answer are tested, but an item without a QuizRequest is not
-- Boundaries: Inputs above the limits are tested, but the exact valid limits (2000/1000) are not
-- Invalid inputs: null question/answer values are tested, while empty or whitespace-only values are not
+#### Equivalence Partitioning
+
+- **Question** property:
+  - Valid classes: `1 <= length <= 2000`
+  - Invalid classes: `length < 1`, `length > 2000` and `Question = null`
+
+- **CorrectAnswer** property:
+  - Valid classes: `1 <= length <= 1000`
+  - Invalid classes: `length < 1`, `length > 1000` and `CorrectAnswer = null`
+
+
+#### Boundary Value Analysis
+- **Question** property:
+  - Test boundaries: `1`, `2000`
+  - Test values just outside the boundaries: `0`, `2001`
+
+- **CorrectAnswer** property:
+  - Test boundaries: `1`, `1000`
+  - Test values just outside the boundaries: `0`, `1001`
+
+
+#### Findings:
+**Covered cases:**
+- valid question and answer
+- missing question
+- missing correct answer
+- question above maximum length `2001`
+- correct answer above maximum length `1001`
+- linked submitted answers
+
+
+**Not covered cases:**
+- question right at the lower boundary `1`
+- question just outside the lower boundary `0` (`""`)
+- whitespace-only question such as `"   "`
+- question at maximum length `2000`
+- correct answer right at the lower boundary `1`
+- correct answer just outside the lower boundary `0` (`""`)
+- whitespace-only correct answer such as `"   "`
+- correct answer at maximum length `1000`
+- missing quiz request
 
 ### SubmittedAnswer
-- Valid combinations: Mostly covered for the current model. Tests exist for answers with and without an evaluation result
-- Boundaries: Lengths 2000 and 2001 are tested, but empty or whitespace-only answers are not
-- Invalid inputs: A missing answer and a missing quiz item are tested; whitespace-only input is not
+#### Equivalence Partitioning
+- **Answer** property:
+  - Valid classes: `1 <= length <= 2000`
+  - Invalid classes: `length < 1`, `length > 2000` and `Answer = null`
 
-### EvaluationResult
-- Valid combinations: Partly covered. Valid results and optional feedback are tested, but there is no defined rule for valid scores
-- Boundaries: Negative scores and scores above 1 are stored successfully, so no score boundary is currently enforced
-- Invalid inputs: A result without a submitted answer is tested and fails because of the database relationship
+- **EvaluationResult** relationship:
+  - Valid classes: answer without an evaluation result and answer with an evaluation result
+  - Invalid classes: missing `QuizItem`, because the answer must belong to a quiz item
+
+#### Boundary Value Analysis
+- **Answer** property:
+  - Test boundaries: `1`, `2000`
+  - Test values just outside the boundaries: `0`, `2001`
+
+#### Findings:
+**Covered cases:**
+- valid answer
+- missing answer
+- answer at maximum length `2000`
+- answer above maximum length `2001`
+- linked quiz item
+- missing quiz item
+- answer without evaluation result
+- answer with evaluation result
+
+**Not covered cases:**
+- answer right at the lower boundary `1`
+- answer just outside the lower boundary `0` (`""`)
+- whitespace-only answer such as `"   "`

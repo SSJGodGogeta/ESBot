@@ -12,6 +12,7 @@ env:
       Build_Directory: Build 
       DOTNET_VERSION: 9.0.x
       CONFIGURATION: Release
+      NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
 
 jobs:
 
@@ -33,9 +34,7 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
-
-    - name: check dependencies
-      uses: mawosoft/dotnet-dependency-alert@v1
+        cache: true
 
     - name: Verify format style
       run: dotnet format style --verify-no-changes

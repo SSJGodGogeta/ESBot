@@ -175,3 +175,21 @@ ESBot/
 │
 └── README.md
 ```
+
+## 12. Static Code Analysis
+
+### SonarQube
+
+```sh
+sonar-scanner
+```
+
+oder mit der VSCode Extenstion:
+
+- “Analyze all files”
+
+### Rider (Built-In Tools)
+
+Run coverage via UI:
+
+- “Cover All Tests”

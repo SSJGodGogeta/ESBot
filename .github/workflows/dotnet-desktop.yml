@@ -37,7 +37,7 @@ jobs:
     - name: Generate test coverage
       uses: alsi-lawr/dotnet-test-coverlet@v1
       with:
-        project: ${{ env.Solution_Name }}
+        project: EsBot.Tests
         # threshold: 50
 
     - name: Verify format style

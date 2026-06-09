@@ -34,11 +34,8 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
-    - name: Generate test coverage
-      uses: alsi-lawr/dotnet-test-coverlet@v1
-      with:
-        project: ESBot.Tests
-        # threshold: 50
+    - name: check dependencies
+      uses: mawosoft/dotnet-dependency-alert@v1
 
     - name: Verify format style
       run: dotnet format style --verify-no-changes

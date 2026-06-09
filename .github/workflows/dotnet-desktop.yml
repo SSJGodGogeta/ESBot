@@ -39,7 +39,6 @@ jobs:
       with:
         project: ${{ env.Solution_Name }}
         # threshold: 50
-        dotnet-version: 9
 
     - name: Verify format style
       run: dotnet format style --verify-no-changes

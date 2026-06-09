@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [ "master" ]
   push:
-    branches: [ "master" ]
+    branches: [ "master", "dev" ] # TODO: remove dev branch
 
 env:
       Solution_Name: ESBot                         # Replace with your solution name, i.e. MyWpfApp.sln.

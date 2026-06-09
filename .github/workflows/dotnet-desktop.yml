@@ -1,16 +1,18 @@
 name: .NET Core Build and Test
 
 on:
+  workflow_dispatch:
   pull_request:
     branches: [ "master" ]
   push:
-    branches: [ "master" ]
+    branches: [ "master", "dev" ]
 
 env:
-      Solution_Name: ESBot                         # Replace with your solution name, i.e. MyWpfApp.sln.
+      Solution_Name: ESBot.sln                         # Replace with your solution name, i.e. MyWpfApp.sln.
       Build_Directory: Build 
       DOTNET_VERSION: 9.0.x
       CONFIGURATION: Release
+      NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
 
 jobs:
 
@@ -32,11 +34,16 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
+        cache: true
+        cache-dependency-path: ESBot.*/packages.lock.json
+
+    - name: Verify format style
+      run: dotnet format style --verify-no-changes
 
     # Execute all unit tests in the solution
     - name: Execute unit tests
       run: dotnet test --configuration $CONFIGURATION --logger "trx;LogFileName=test_results.trx" --results-directory ./TestResults
-    
+
     - name: Debug TRX location
       run: find . -name "*.trx"
 

@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [ "master" ]
   push:
-    branches: [ "master", "dev" ] # TODO: remove dev branch
+    branches: [ "master" ]
 
 env:
       Solution_Name: ESBot                         # Replace with your solution name, i.e. MyWpfApp.sln.
@@ -32,6 +32,9 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Verify format style
+      run: dotnet format style --verify-no-changes
 
     # Execute all unit tests in the solution
     - name: Execute unit tests

@@ -8,7 +8,7 @@ on:
     branches: [ "master", "dev" ]
 
 env:
-      Solution_Name: ESBot                         # Replace with your solution name, i.e. MyWpfApp.sln.
+      Solution_Name: ESBot.sln                         # Replace with your solution name, i.e. MyWpfApp.sln.
       Build_Directory: Build 
       DOTNET_VERSION: 9.0.x
       CONFIGURATION: Release
@@ -39,7 +39,7 @@ jobs:
       with:
         project: ${{ env.Solution_Name }}
         # threshold: 50
-        # dotnet-version: ${{ env.DOTNET_VERSION }}
+        dotnet-version: 9
 
     - name: Verify format style
       run: dotnet format style --verify-no-changes

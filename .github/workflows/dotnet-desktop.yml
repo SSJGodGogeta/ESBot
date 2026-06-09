@@ -35,6 +35,7 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
         cache: true
+        cache-dependency-path: ESBot.*/packages.lock.json
 
     - name: Verify format style
       run: dotnet format style --verify-no-changes

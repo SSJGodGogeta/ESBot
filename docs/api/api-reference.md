@@ -49,17 +49,7 @@ Für jede Ressource gelten die folgenden Endpoints:
     "id": "4b2a4dcf-3a47-4a40-a7db-9e6d8af95939",
     "username": "alice",
     "email": "alice@esbot.com",
-    "hashedPassword": "hashed1",
-    "createdAt": "2026-04-15T09:36:11.897619Z",
-    "sessions": []
-  },
-  {
-    "id": "3adb43bc-570d-40b9-bd6b-a0ada7ce6523",
-    "username": "bob",
-    "email": "bob@esbot.com",
-    "hashedPassword": "hashed2",
-    "createdAt": "2026-04-15T09:36:11.897804Z",
-    "sessions": []
+    "createdAt": "2026-04-15T09:36:11.897619Z"
   }
 ]
 ```
@@ -73,10 +63,9 @@ Für jede Ressource gelten die folgenden Endpoints:
 
 ```json
 {
-  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
   "username": "string",
   "email": "user@example.com",
-  "hashedPassword": "stringst"
+  "password": "stringst"
 }
 ```
 
@@ -87,7 +76,6 @@ Für jede Ressource gelten die folgenden Endpoints:
   "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
   "username": "string",
   "email": "user@example.com",
-  "hashedPassword": "stringst",
   "createdAt": "2026-06-16T12:00:00Z"
 }
 ```
@@ -111,8 +99,9 @@ Für jede Ressource gelten die folgenden Endpoints:
 ```json
 {
   "id": "11111111-2222-3333-4444-555555555555",
-  "name": "Alice Updated",
-  "email": "alice@example.com"
+  "username": "Alice Updated",
+  "email": "alice@example.com",
+  "createdAt": "2026-06-16T12:00:00Z"
 }
 ```
 

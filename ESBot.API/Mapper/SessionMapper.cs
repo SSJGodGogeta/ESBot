@@ -16,7 +16,8 @@ public class SessionMapper
         return new Session
         {
             Id = Guid.NewGuid(),
-            UserId = dto.UserId
+            UserId = dto.UserId,
+            Title = dto.Title
         };
     }
 
@@ -24,6 +25,7 @@ public class SessionMapper
     {
         if (dto.EndedAt.HasValue)
             entity.EndedAt = dto.EndedAt.Value;
+        entity.Title = dto.Title;
     }
 
     public SessionDto ToDto(Session entity)
@@ -35,7 +37,8 @@ public class SessionMapper
             StartedAt = entity.StartedAt,
             EndedAt = entity.EndedAt,
             MessageCount = entity.Messages.Count,
-            QuizRequestCount = entity.QuizRequests.Count
+            QuizRequestCount = entity.QuizRequests.Count,
+            Title = entity.Title
         };
     }
 }

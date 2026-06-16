@@ -36,12 +36,14 @@ public static class DbSeeder
         // =====================
         var session1 = new Session
         {
-            UserId = user1.Id
+            UserId = user1.Id,
+            Title = "Learning C#"
         };
 
         var session2 = new Session
         {
             UserId = user2.Id,
+            Title = "ESBot Q&A"
         };
 
         db.UserSessions.AddRange(session1, session2);

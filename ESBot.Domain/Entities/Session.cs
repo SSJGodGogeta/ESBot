@@ -16,6 +16,11 @@ public class Session
     public Guid UserId { get; set; }
     
     public User User { get; set; } = null!;
+    
+    [Required]
+    [MinLength(1)]
+    [MaxLength(4000)]
+    public string Title { get; set; } = null!;
 
     [Required]
     public DateTime StartedAt { get; private set; } = DateTime.UtcNow;

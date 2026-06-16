@@ -12,6 +12,7 @@ public class SessionFilter : IEntityFilter<Session>
     public bool? IsActive { get; set; }
     public bool? HasMessages { get; set; }
     public bool? HasQuizRequests { get; set; }
+    public string? Title { get; set; }
 
     public bool IncludeUser { get; set; } = false;
     public bool IncludeMessages { get; set; } = false;
@@ -29,6 +30,13 @@ public class SessionFilter : IEntityFilter<Session>
         if (UserId.HasValue)
             query = query.Where(s => s.UserId == UserId);
 
+        if (!string.IsNullOrWhiteSpace(Title))
+        {
+            var search = Title.ToLower();
+            query = query.Where(m =>
+                EF.Functions.Like(m.Title.ToLower(), $"%{search}%"));
+        }
+        
         if (StartedFrom.HasValue)
             query = query.Where(s => s.StartedAt >= StartedFrom.Value);
 

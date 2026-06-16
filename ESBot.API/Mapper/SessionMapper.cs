@@ -16,7 +16,7 @@ public class SessionMapper
         return new Session
         {
             Id = Guid.NewGuid(),
-            UserId = dto.UserId,
+            UserId = dto.UserId!.Value,
             Title = dto.Title
         };
     }

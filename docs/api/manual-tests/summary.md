@@ -1,0 +1,9 @@
+# Manual Test Summary
+## Were all status codes as expected?
+Yes and No. Most status codes were as expected, but there were a few instances where the API returned a 400 Bad Request instead of the expected 422 Unprocessable Entity when invalid input was provided.
+Reason behind that is the validation by ASP .NET Core's model binding, which returns a 400 Bad Request when the input cannot be bound to the expected model. This is a common behavior in ASP.NET Core applications and is not necessarily an issue with the API itself, but it does differ from the expected 422 Unprocessable Entity status code for validation errors.
+Basically, the API is functioning correctly, but the status codes for certain validation errors may not align with the expected behavior, because the program returns way before it reaches our code. This is something to keep in mind when interpreting the results of the manual tests.
+
+Did the error messages provide useful feedback? 
+Yes, the error messages provided useful feedback. They were generally clear and informative (too much information in the 500 case), indicating what went wrong and how to correct it. For example, when a required field was missing, the error message specified which field was missing and what type of data was expected. This helped in quickly identifying and resolving issues during testing.
+It was also able to identify specific validation errors, such as invalid data formats or out-of-range values, which provided valuable insights into how the API handles different types of input errors. Overall, the error messages were effective in guiding the testing process and improving the overall quality of the API.

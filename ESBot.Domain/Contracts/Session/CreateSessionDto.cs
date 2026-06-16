@@ -6,7 +6,7 @@ namespace ESBot.Domain.Contracts.Session;
 public class CreateSessionDto : ICreateDto
 {
     [Required]
-    public Guid UserId { get; set; }
+    public Guid? UserId { get; set; }
     
     [Required]
     [MinLength(1)]

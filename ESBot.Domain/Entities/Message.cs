@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using ESBot.Domain.Enums;
-using ESBot.Domain.Interfaces;
 
 namespace ESBot.Domain.Entities;
 
@@ -8,7 +7,7 @@ namespace ESBot.Domain.Entities;
 /// Represents a single message within a user session.
 /// Messages store the conversational exchange between the user and the ESBot system.
 /// </summary>
-public class Message : IImmutableProperties
+public class Message
 {
     public Guid Id { get; set; } = Guid.NewGuid();
 
@@ -27,7 +26,4 @@ public class Message : IImmutableProperties
 
     [Required]
     public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
-    
-    public IEnumerable<string> GetImmutableProperties()
-        => new[] { nameof(CreatedAt) };
 }

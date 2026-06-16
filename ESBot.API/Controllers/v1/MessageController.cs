@@ -1,4 +1,7 @@
 using ESBot.API.Filter.Entities;
+using ESBot.API.Interfaces;
+using ESBot.API.Mapper;
+using ESBot.Domain.Contracts.Message;
 using ESBot.Domain.Entities;
 using ESBot.Infrastructure.Data;
 using Microsoft.AspNetCore.Mvc;
@@ -7,14 +10,17 @@ namespace ESBot.API.Controllers.v1;
 
 [Route("/v1/[controller]")]
 [ApiController]
-public class MessagesController(EsBotDbContext context): BaseController<Message>(context), IController<Message, MessageFilter>
+public class MessageController(EsBotDbContext context,
+    IMapper<CreateMessageDto, UpdateMessageDto, MessageDto, Message> mapper) 
+    : BaseController<Message, CreateMessageDto, UpdateMessageDto, MessageDto>(context, mapper), 
+        IController<Message, MessageFilter, CreateMessageDto, UpdateMessageDto>
 {
  
     [HttpGet]
     public Task<IActionResult> Filter([FromQuery] MessageFilter filter) => base.FilterEntities(filter);
     
     [HttpPost]
-    public IActionResult Create([FromBody] Message message) => base.CreateEntityAndRespond(message);
+    public IActionResult Create([FromBody] CreateMessageDto message) => base.CreateEntityAndRespond(message);
 
     
     [HttpDelete]
@@ -22,6 +28,6 @@ public class MessagesController(EsBotDbContext context): BaseController<Message>
 
     
     [HttpPut]
-    public IActionResult Update(Guid id, [FromBody] Message message) => base.UpdateEntityAndRespond(id, message);
+    public IActionResult Update(Guid id, [FromBody] UpdateMessageDto message) => base.UpdateEntityAndRespond(id, message);
     
 }

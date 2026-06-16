@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using ESBot.Domain.Interfaces;
 
 namespace ESBot.Domain.Entities;
@@ -7,13 +8,13 @@ namespace ESBot.Domain.Entities;
 /// Represents a single learning session of a user.
 /// A session groups all messages, quiz requests, and interactions within a specific learning context.
 /// </summary>
-public class Session : IImmutableProperties
+public class Session 
 {
     public Guid Id { get; set; } = Guid.NewGuid();
 
     [Required]
     public Guid UserId { get; set; }
-
+    
     public User User { get; set; } = null!;
 
     [Required]
@@ -35,7 +36,4 @@ public class Session : IImmutableProperties
         message.Session = this;
         Messages.Add(message);
     }
-    
-    public IEnumerable<string> GetImmutableProperties()
-        => new[] { nameof(StartedAt) };
 }

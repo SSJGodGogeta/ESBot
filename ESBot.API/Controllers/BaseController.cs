@@ -1,5 +1,8 @@
 using System.Linq.Expressions;
 using ESBot.API.Filter;
+using ESBot.API.Interfaces;
+using ESBot.API.Mapper;
+using ESBot.Domain.Interfaces;
 using ESBot.Infrastructure.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -7,11 +10,16 @@ using Microsoft.EntityFrameworkCore;
 namespace ESBot.API.Controllers;
 
 
-public abstract partial class BaseController<TEntity>(EsBotDbContext context) : ControllerBase
+public abstract partial class BaseController<TEntity, TCreateDto, TUpdateDto, TDto>(EsBotDbContext context, IMapper<TCreateDto, TUpdateDto, TDto, TEntity> mapper) : ControllerBase
     where TEntity : class, new()
+    where TCreateDto : ICreateDto
+    where TUpdateDto : IUpdateDto
+    where TDto : IDto
 {
     protected readonly EsBotDbContext Context = context;
     protected readonly DbSet<TEntity> DbSet = context.Set<TEntity>();
+    
+    protected readonly IMapper<TCreateDto, TUpdateDto, TDto, TEntity> Mapper = mapper;
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////     Create/Retrieve/Update/Delete     //////////////////////////////
@@ -21,16 +29,18 @@ public abstract partial class BaseController<TEntity>(EsBotDbContext context) : 
     /// <summary>
     /// Creates a new entity in the database.
     /// </summary>
-    /// <param name="entity">The Entity to be created, retrieved from the body</param>
+    /// <param name="dto">The Entity DTO to be created, retrieved from the body</param>
     /// <returns>An IActionResult indicating the outcome of the creation request.</returns>
-    protected IActionResult CreateEntityAndRespond([FromBody] TEntity entity)
+    protected IActionResult CreateEntityAndRespond([FromBody] TCreateDto dto)
     {
         try
         {
             if (!ModelState.IsValid) return UnprocessableEntity(ModelState);
+            var entity = Mapper.ToEntity(dto);
             var result = CreateAndSaveEntity(entity);
-            if(result.Item1) return StatusCode(StatusCodes.Status201Created, entity);
-            return StatusCode(409, $"Could not create entity of type {typeof(TEntity).Name}\nAn Exception occurred: Type - {result.Item2!.GetType()}, Message - {result.Item2.Message}");
+            if(!result.Item1) return StatusCode(409, $"Could not create entity of type {typeof(TEntity).Name}\nAn Exception occurred: Type - {result.Item2!.GetType()}, Message - {result.Item2.Message}");
+            var dtoResult = Mapper.ToDto(entity);
+            return StatusCode(StatusCodes.Status201Created, dtoResult);
         }
         catch (Exception e)
         {
@@ -70,8 +80,8 @@ public abstract partial class BaseController<TEntity>(EsBotDbContext context) : 
     ///
     /// </summary>
     /// <param name="id">The id of the entity to update.</param>
-    /// <param name="updatedEntity">The new entity data containing the updated scalar values.</param>
-    protected IActionResult UpdateEntityAndRespond(Guid id, [FromBody] TEntity updatedEntity)
+    /// <param name="dto">The new entity data containing the updated scalar values.</param>
+    protected IActionResult UpdateEntityAndRespond(Guid id, [FromBody] TUpdateDto dto)
     {
         try
         {
@@ -79,24 +89,14 @@ public abstract partial class BaseController<TEntity>(EsBotDbContext context) : 
             if (!ModelState.IsValid) return UnprocessableEntity(ModelState);
             TEntity? existingEntity = GetEntityById(id);
             if (existingEntity == null) return NotFound($"{typeof(TEntity).Name} with ID {id} not found.");
-        
-            var idProp = typeof(TEntity).GetProperties().FirstOrDefault(p =>
-                p.Name.Equals("Id", StringComparison.OrdinalIgnoreCase) ||
-                p.Name.EndsWith("Id", StringComparison.OrdinalIgnoreCase)
-            );
-            if (idProp == null)
-                return BadRequest("Could not identify ID property on entity. Please check the name and the naming conventions");
-            var updatedIdValue = idProp.GetValue(updatedEntity);
-            if (updatedIdValue is not Guid updatedGuid)
-                return BadRequest("The entity ID must be a Guid.");
-            if (id != updatedGuid)
-                return BadRequest($"The ID in the body does not match the ID in the URL. Body ID/URL ID: {updatedIdValue}/{id}");
 
-            var result = UpdateEntityAndSave(existingEntity, updatedEntity);
-            updatedEntity = GetEntityById(id)!;
-            if(result.Item1) return Ok(updatedEntity);
-            return StatusCode(409, $"Could not update entity of type {typeof(TEntity).Name}\nAn Exception occurred: Type - {result.Item2!.GetType()}, Message - {result.Item2.Message}");
+            Mapper.ApplyUpdate(existingEntity, dto);
+            
+            var result = UpdateEntityAndSave(existingEntity);
+            if(!result.Item1) return StatusCode(409, $"Could not update entity of type {typeof(TEntity).Name}\nAn Exception occurred: Type - {result.Item2!.GetType()}, Message - {result.Item2.Message}");
 
+            var dtoResult = Mapper.ToDto(existingEntity);
+            return Ok(dtoResult);
         }
         catch (Exception e)
         {

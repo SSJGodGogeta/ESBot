@@ -7,7 +7,7 @@ namespace ESBot.Domain.Entities;
 /// Represents an answer submitted by a user for a specific quiz item.
 /// Stores the user's response before evaluation.
 /// </summary>
-public class SubmittedAnswer : IImmutableProperties
+public class SubmittedAnswer
 {
     public Guid Id { get; set; } = Guid.NewGuid();
 
@@ -24,8 +24,5 @@ public class SubmittedAnswer : IImmutableProperties
     public DateTime SubmittedAt { get; private set; } = DateTime.UtcNow;
 
     public EvaluationResult? EvaluationResult { get; set; }
-    
-    public IEnumerable<string> GetImmutableProperties()
-        => new[] { nameof(SubmittedAt) };
     
 }

@@ -1,4 +1,7 @@
 using ESBot.API.Filter.Entities;
+using ESBot.API.Interfaces;
+using ESBot.API.Mapper;
+using ESBot.Domain.Contracts.QuizItem;
 using ESBot.Domain.Entities;
 using ESBot.Infrastructure.Data;
 using Microsoft.AspNetCore.Mvc;
@@ -7,14 +10,17 @@ namespace ESBot.API.Controllers.v1;
 
 [Route("/v1/[controller]")]
 [ApiController]
-public class QuizItemsController(EsBotDbContext context): BaseController<QuizItem>(context), IController<QuizItem, QuizItemFilter>
+public class QuizItemController(EsBotDbContext context,
+    IMapper<CreateQuizItemDto, UpdateQuizItemDto, QuizItemDto, QuizItem> mapper) 
+    : BaseController<QuizItem, CreateQuizItemDto, UpdateQuizItemDto, QuizItemDto>(context, mapper), 
+        IController<QuizItem, QuizItemFilter, CreateQuizItemDto, UpdateQuizItemDto>
 {
  
     [HttpGet]
     public Task<IActionResult> Filter([FromQuery] QuizItemFilter filter) => base.FilterEntities(filter);
     
     [HttpPost]
-    public IActionResult Create([FromBody] QuizItem quizItem) => base.CreateEntityAndRespond(quizItem);
+    public IActionResult Create([FromBody] CreateQuizItemDto quizItem) => base.CreateEntityAndRespond(quizItem);
 
     
     [HttpDelete]
@@ -22,6 +28,6 @@ public class QuizItemsController(EsBotDbContext context): BaseController<QuizIte
 
     
     [HttpPut]
-    public IActionResult Update(Guid id, [FromBody] QuizItem quizItem) => base.UpdateEntityAndRespond(id, quizItem);
+    public IActionResult Update(Guid id, [FromBody] UpdateQuizItemDto quizItem) => base.UpdateEntityAndRespond(id, quizItem);
     
 }

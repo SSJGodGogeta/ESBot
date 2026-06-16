@@ -7,7 +7,7 @@ namespace ESBot.Domain.Entities;
 /// Represents a registered user in the ESBot system.
 /// A user is the root identity entity and can have multiple learning sessions.
 /// </summary>
-public class User : IImmutableProperties
+public class User 
 {
     public Guid Id { get; set; } = Guid.NewGuid();
 
@@ -30,6 +30,4 @@ public class User : IImmutableProperties
     // Navigation
     public ICollection<Session> Sessions { get; set; } = new List<Session>();
     
-    public IEnumerable<string> GetImmutableProperties()
-        => new[] { nameof(CreatedAt) };
 }

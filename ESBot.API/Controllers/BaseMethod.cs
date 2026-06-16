@@ -3,7 +3,11 @@ using ESBot.Domain.Interfaces;
 
 namespace ESBot.API.Controllers;
 
-public abstract partial class BaseController<TEntity> where TEntity : class, new()
+public abstract partial class BaseController<TEntity, TCreateDto, TUpdateDto, TDto>
+    where TEntity : class, new()
+    where TCreateDto : ICreateDto
+    where TUpdateDto : IUpdateDto
+    where TDto : IDto
 {
     protected TEntity? GetEntityById(Guid id) => DbSet.Find(id);
 
@@ -38,20 +42,11 @@ public abstract partial class BaseController<TEntity> where TEntity : class, new
         return (true, null);
     }
 
-    protected (bool, Exception?) UpdateEntityAndSave(TEntity? existingEntity, TEntity updatedEntity)
+    protected (bool, Exception?) UpdateEntityAndSave(TEntity? entity)
     {
         try
         {
-            if (existingEntity is null) return (false, new ArgumentNullException(nameof(existingEntity)));
-            var entry = Context.Entry(existingEntity);
-            entry.CurrentValues.SetValues(updatedEntity);
-            if (existingEntity is IImmutableProperties immutable)
-            {
-                foreach (var prop in immutable.GetImmutableProperties())
-                {
-                    entry.Property(prop).IsModified = false;
-                }
-            }
+            if (entity is null) return (false, new ArgumentNullException(nameof(entity)));
             Context.SaveChanges();
         }
         catch (Exception e)

@@ -82,6 +82,8 @@ public class Program
             options.EnableSensitiveDataLogging();
         });
 
+        builder.Services.AddMappers(); 
+        
         builder.Services.AddControllers()
             .AddJsonOptions(options =>
             {

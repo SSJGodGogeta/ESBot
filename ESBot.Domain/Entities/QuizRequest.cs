@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using ESBot.Domain.Enums;
-using ESBot.Domain.Interfaces;
 
 namespace ESBot.Domain.Entities;
 
@@ -8,7 +7,7 @@ namespace ESBot.Domain.Entities;
 /// Represents a request to generate a quiz for a specific topic within a user session.
 /// A quiz request contains metadata such as topic and difficulty.
 /// </summary>
-public class QuizRequest : IImmutableProperties
+public class QuizRequest
 {
     public Guid Id { get; set; } = Guid.NewGuid();
 
@@ -29,7 +28,4 @@ public class QuizRequest : IImmutableProperties
 
     public ICollection<QuizItem> QuizItems { get; set; }
         = new List<QuizItem>();
-    
-    public IEnumerable<string> GetImmutableProperties()
-        => new[] { nameof(CreatedAt) };
 }

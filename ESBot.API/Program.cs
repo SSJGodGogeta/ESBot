@@ -66,13 +66,7 @@ public class Program
     
     private static void AddHealthChecks(WebApplication app)
     {
-        app.MapHealthChecks("/health/live", new()
-        {
-            Predicate = _ => false,
-            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-        });
-
-        app.MapHealthChecks("/health/ready", new()
+        app.MapHealthChecks("api/v1/health", new()
         {
             Predicate = _ => true,
             ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse

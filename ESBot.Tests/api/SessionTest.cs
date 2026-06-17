@@ -80,7 +80,7 @@ public class SessionTest : IClassFixture<ApiFactory>
         var createUser = new CreateUserDto
         {
             Email = "arman@arman.com",
-            Password = "random",
+            Password = "1234567890",
             Username = "arman"
         };
         var userResponse = await _client.PostAsJsonAsync("/v1/User", createUser);

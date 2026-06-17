@@ -9,51 +9,49 @@ public abstract partial class BaseController<TEntity, TCreateDto, TUpdateDto, TD
     where TUpdateDto : IUpdateDto
     where TDto : IDto
 {
-    protected TEntity? GetEntityById(Guid id) => DbSet.Find(id);
+    protected async Task<TEntity?> GetEntityById(Guid id) => await DbSet.FindAsync(id);
 
-    protected (bool, Exception?) CreateAndSaveEntity(TEntity? entity)
+    protected async Task<(bool, Exception?)> CreateAndSaveEntityAsync(TEntity? entity)
     {
         try
         {
             if (entity == null) return (false, new ArgumentNullException(nameof(entity)));
             DbSet.Add(entity);
-            Context.SaveChanges();
+            await Context.SaveChangesAsync();
+            return (true, null);
         }
         catch (Exception e)
         {
             return (false, e);
         }
-
-        return (true, null);
     }
 
-    protected (bool, Exception?) DeleteEntityAndSave(TEntity entity)
+    protected async Task<(bool, Exception?)> DeleteEntityAndSave(TEntity entity)
     {
         try
         {
             DbSet.Remove(entity);
-            Context.SaveChanges();
+            await Context.SaveChangesAsync();
+            return (true, null);
         }
         catch (Exception e)
         {
             return (false, e);
         }
-
-        return (true, null);
     }
 
-    protected (bool, Exception?) UpdateEntityAndSave(TEntity? entity)
+    protected async Task<(bool, Exception?)> UpdateEntityAndSave(TEntity? entity)
     {
         try
         {
             if (entity is null) return (false, new ArgumentNullException(nameof(entity)));
-            Context.SaveChanges();
+            await Context.SaveChangesAsync();
+            return (true, null);
+
         }
         catch (Exception e)
         {
             return (false, e);
         }
-
-        return (true, null);
     }
 }

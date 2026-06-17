@@ -17,17 +17,17 @@ public class SessionController(EsBotDbContext context,
 {
  
     [HttpGet]
-    public Task<IActionResult> Filter([FromQuery] SessionFilter filter) => base.FilterEntities(filter);
+    public async Task<IActionResult> Filter([FromQuery] SessionFilter filter, [FromQuery] int page = 1, [FromQuery] int pageSize = 50) => await base.FilterEntities(filter, page, pageSize);
     
     [HttpPost]
-    public IActionResult Create([FromBody] CreateSessionDto session) => base.CreateEntityAndRespond(session);
+    public async Task<IActionResult> Create([FromBody] CreateSessionDto session) => await base.CreateEntityAndRespond(session);
 
     
     [HttpDelete]
-    public IActionResult Delete(Guid id) => base.DeleteEntityAndRespond(id);
+    public async Task<IActionResult> Delete(Guid id) => await base.DeleteEntityAndRespond(id);
 
     
     [HttpPut]
-    public IActionResult Update(Guid id, [FromBody] UpdateSessionDto session) => base.UpdateEntityAndRespond(id, session);
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateSessionDto session) => await base.UpdateEntityAndRespond(id, session);
     
 }

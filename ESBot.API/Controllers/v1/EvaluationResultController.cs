@@ -17,17 +17,17 @@ public class EvaluationResultsController(EsBotDbContext context,
 {
  
     [HttpGet]
-    public Task<IActionResult> Filter([FromQuery] EvaluationResultFilter filter) => base.FilterEntities(filter);
+    public async Task<IActionResult> Filter([FromQuery] EvaluationResultFilter filter, [FromQuery] int page = 1, [FromQuery] int pageSize = 50) => await base.FilterEntities(filter, page, pageSize);
     
     [HttpPost]
-    public IActionResult Create([FromBody] CreateEvaluationResultDto evaluationResult) => base.CreateEntityAndRespond(evaluationResult);
+    public async Task<IActionResult> Create([FromBody] CreateEvaluationResultDto evaluationResult) => await base.CreateEntityAndRespond(evaluationResult);
 
     
     [HttpDelete]
-    public IActionResult Delete(Guid id) => base.DeleteEntityAndRespond(id);
+    public async Task<IActionResult> Delete(Guid id) => await base.DeleteEntityAndRespond(id);
 
     
     [HttpPut]
-    public IActionResult Update(Guid id, [FromBody] UpdateEvaluationResultDto evaluationResult) => base.UpdateEntityAndRespond(id, evaluationResult);
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateEvaluationResultDto evaluationResult) => await base.UpdateEntityAndRespond(id, evaluationResult);
     
 }

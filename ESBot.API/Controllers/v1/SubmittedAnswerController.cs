@@ -17,17 +17,17 @@ public class SubmittedAnswerController(EsBotDbContext context,
 {
  
     [HttpGet]
-    public Task<IActionResult> Filter([FromQuery] SubmittedAnswerFilter filter) => base.FilterEntities(filter);
+    public async Task<IActionResult> Filter([FromQuery] SubmittedAnswerFilter filter, [FromQuery] int page = 1, [FromQuery] int pageSize = 50) => await base.FilterEntities(filter, page, pageSize);
     
     [HttpPost]
-    public IActionResult Create([FromBody] CreateSubmittedAnswerDto submittedAnswer) => base.CreateEntityAndRespond(submittedAnswer);
+    public async Task<IActionResult> Create([FromBody] CreateSubmittedAnswerDto submittedAnswer) => await base.CreateEntityAndRespond(submittedAnswer);
 
     
     [HttpDelete]
-    public IActionResult Delete(Guid id) => base.DeleteEntityAndRespond(id);
+    public async Task<IActionResult> Delete(Guid id) => await base.DeleteEntityAndRespond(id);
 
     
     [HttpPut]
-    public IActionResult Update(Guid id, [FromBody] UpdateSubmittedAnswerDto submittedAnswer) => base.UpdateEntityAndRespond(id, submittedAnswer);
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateSubmittedAnswerDto submittedAnswer) => await base.UpdateEntityAndRespond(id, submittedAnswer);
     
 }

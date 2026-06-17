@@ -17,17 +17,17 @@ public class MessageController(EsBotDbContext context,
 {
  
     [HttpGet]
-    public Task<IActionResult> Filter([FromQuery] MessageFilter filter) => base.FilterEntities(filter);
+    public async Task<IActionResult> Filter([FromQuery] MessageFilter filter, [FromQuery] int page = 1, [FromQuery] int pageSize = 50) => await base.FilterEntities(filter, page, pageSize);
     
     [HttpPost]
-    public IActionResult Create([FromBody] CreateMessageDto message) => base.CreateEntityAndRespond(message);
+    public async Task<IActionResult> Create([FromBody] CreateMessageDto message) => await base.CreateEntityAndRespond(message);
 
     
     [HttpDelete]
-    public IActionResult Delete(Guid id) => base.DeleteEntityAndRespond(id);
+    public async Task<IActionResult> Delete(Guid id) => await base.DeleteEntityAndRespond(id);
 
     
     [HttpPut]
-    public IActionResult Update(Guid id, [FromBody] UpdateMessageDto message) => base.UpdateEntityAndRespond(id, message);
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateMessageDto message) => await base.UpdateEntityAndRespond(id, message);
     
 }

@@ -17,17 +17,17 @@ public class QuizRequestController(EsBotDbContext context,
 {
  
     [HttpGet]
-    public Task<IActionResult> Filter([FromQuery] QuizRequestFilter filter) => base.FilterEntities(filter);
+    public async Task<IActionResult> Filter([FromQuery] QuizRequestFilter filter, [FromQuery] int page = 1, [FromQuery] int pageSize = 50) => await base.FilterEntities(filter, page, pageSize);
     
     [HttpPost]
-    public IActionResult Create([FromBody] CreateQuizRequestDto quizRequest) => base.CreateEntityAndRespond(quizRequest);
+    public async Task<IActionResult> Create([FromBody] CreateQuizRequestDto quizRequest) => await base.CreateEntityAndRespond(quizRequest);
 
     
     [HttpDelete]
-    public IActionResult Delete(Guid id) => base.DeleteEntityAndRespond(id);
+    public async Task<IActionResult> Delete(Guid id) => await base.DeleteEntityAndRespond(id);
 
     
     [HttpPut]
-    public IActionResult Update(Guid id, [FromBody] UpdateQuizRequestDto quizRequest) => base.UpdateEntityAndRespond(id, quizRequest);
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateQuizRequestDto quizRequest) => await base.UpdateEntityAndRespond(id, quizRequest);
     
 }

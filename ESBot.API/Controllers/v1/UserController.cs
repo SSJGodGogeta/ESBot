@@ -17,17 +17,17 @@ public class UserController(EsBotDbContext context,
 {
  
     [HttpGet]
-    public Task<IActionResult> Filter([FromQuery] UserFilter filter) => base.FilterEntities(filter);
+    public async Task<IActionResult> Filter([FromQuery] UserFilter filter, [FromQuery] int page = 1, [FromQuery] int pageSize = 50) => await base.FilterEntities(filter, page, pageSize);
     
     [HttpPost]
-    public IActionResult Create([FromBody] CreateUserDto user) => base.CreateEntityAndRespond(user);
+    public async Task<IActionResult> Create([FromBody] CreateUserDto user) => await base.CreateEntityAndRespond(user);
 
     
     [HttpDelete]
-    public IActionResult Delete(Guid id) => base.DeleteEntityAndRespond(id);
+    public async Task<IActionResult> Delete(Guid id) => await base.DeleteEntityAndRespond(id);
 
     
     [HttpPut]
-    public IActionResult Update(Guid id, [FromBody] UpdateUserDto user) => base.UpdateEntityAndRespond(id, user);
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateUserDto user) => await base.UpdateEntityAndRespond(id, user);
     
 }

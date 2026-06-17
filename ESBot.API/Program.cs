@@ -7,7 +7,7 @@ using Microsoft.OpenApi.Models;
 
 namespace ESBot.API;
 
-public class Program
+public partial class Program
 {
     public static void Main(string[] args)
     {
@@ -19,14 +19,43 @@ public class Program
         string? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
         if (connectionString == null)
             throw new NullReferenceException("connectionString is null! Please check  your configuration!");
+
+        var healthChecksBuilder = builder.Services.AddHealthChecks();
         
+        if (builder.Environment.IsEnvironment("Testing"))
+        {
+            builder.Services.AddDbContext<EsBotDbContext>(options =>
+            {
+                options.UseInMemoryDatabase("TestDb");
+            });
+            healthChecksBuilder.AddCheck("test_health", () => 
+                Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult.Healthy());
+
+        }
+        else
+        {
+            builder.Services.AddDbContext<EsBotDbContext>(options =>
+            {
+                options.UseNpgsql(connectionString);
+                options.EnableDetailedErrors();
+                options.EnableSensitiveDataLogging();
+            });
+            healthChecksBuilder
+                .AddDbContextCheck<EsBotDbContext>("database")
+                .AddNpgSql(connectionString, name: "postgres");
+        }
+
         AddServices(builder, connectionString);
-        
+
         var app = builder.Build();
         var logger = app.Services.GetRequiredService<ILogger<Program>>();
-
-        AddHealthChecks(app);
-        MigrateDatabase(app, logger);
+        
+        AddHealthCheckEndpoint(app);
+        
+        if (!builder.Environment.IsEnvironment("Testing"))
+        {
+            MigrateDatabase(app, logger);
+        }
 
         // =====================
         // Middleware
@@ -64,7 +93,7 @@ public class Program
         }
     }
     
-    private static void AddHealthChecks(WebApplication app)
+    private static void AddHealthCheckEndpoint(WebApplication app)
     {
         app.MapHealthChecks("api/v1/health", new()
         {
@@ -75,13 +104,6 @@ public class Program
     
     private static void AddServices(WebApplicationBuilder builder, String connectionString)
     {
-        builder.Services.AddDbContext<EsBotDbContext>(options =>
-        {
-            options.UseNpgsql(connectionString);
-            options.EnableDetailedErrors();
-            options.EnableSensitiveDataLogging();
-        });
-
         builder.Services.AddMappers(); 
         
         builder.Services.AddControllers()
@@ -89,9 +111,6 @@ public class Program
             {
                 options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
             });
-        builder.Services.AddHealthChecks()
-            .AddDbContextCheck<EsBotDbContext>("database")
-            .AddNpgSql(connectionString, name: "postgres");
         
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen(options =>

@@ -72,6 +72,17 @@ public partial class Program
         using (var scope = app.Services.CreateScope())
         {
             var db = scope.ServiceProvider.GetRequiredService<EsBotDbContext>();
+            var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
+
+            // Check if database should be reset (useful for testing/development)
+            var forceDbReset = configuration.GetValue<bool>("Database:ForceReset");
+            if (forceDbReset)
+            {
+                logger.LogWarning("ForceReset is enabled - Deleting existing database!");
+                db.Database.EnsureDeleted();
+                logger.LogInformation("Database deleted successfully");
+            }
+
             var retries = 10;
 
             while (retries > 0)
@@ -88,7 +99,7 @@ public partial class Program
                     Thread.Sleep(3000);
                 }
             }
-            
+
             DbSeeder.Seed(db);
         }
     }

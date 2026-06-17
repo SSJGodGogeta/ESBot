@@ -16,6 +16,7 @@ public static class DbSeeder
         // =====================
         var user1 = new User
         {
+            Id = Guid.Parse("8275a8cb-2ee7-4ffe-a18c-623cd8a7979e"),
             Username = "alice",
             Email = "alice@esbot.com",
             HashedPassword = "hashed1"

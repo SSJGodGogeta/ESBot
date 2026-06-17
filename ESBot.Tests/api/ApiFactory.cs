@@ -9,10 +9,17 @@ namespace ESBot.Tests.api;
 
 public class ApiFactory : WebApplicationFactory<Program>
 {
+    private readonly string _dbName;
+
+    public ApiFactory()
+    {
+        _dbName = Guid.NewGuid().ToString();
+    }
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("Testing");
-        
+
         builder.ConfigureServices(services =>
         {
             // alte DB entfernen
@@ -27,7 +34,7 @@ public class ApiFactory : WebApplicationFactory<Program>
             // Test DB einbauen
             services.AddDbContext<EsBotDbContext>(options =>
             {
-                options.UseInMemoryDatabase("TestDb");
+                options.UseInMemoryDatabase(_dbName);
             });
         });
     }

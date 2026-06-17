@@ -42,6 +42,7 @@ public static class DbSeeder
 
         var session2 = new Session
         {
+            Id = Guid.Parse("a667cb37-84e8-4ad7-94c6-7d139636d8a3"),
             UserId = user2.Id,
             Title = "ESBot Q&A"
         };

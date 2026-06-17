@@ -21,6 +21,7 @@
           netcoredbg         # Debugger
           git                # Version control (lightweight, can be removed)
           curl               # For testing the API
+          jmeter             # For performance testing the api
         ];
         
       in

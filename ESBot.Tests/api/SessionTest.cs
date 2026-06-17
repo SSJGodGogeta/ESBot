@@ -10,7 +10,7 @@ public class SessionTest
     public async Task GetSessions_Returns200()
     {
         RestClient client = new RestClient("http://localhost:5243");
-        RestRequest request = new RestRequest("/v1/sessions", Method.Get);
+        RestRequest request = new RestRequest("/v1/Session", Method.Get);
         
         RestResponse response = await client.ExecuteAsync(request);
         

@@ -30,7 +30,7 @@ public class MessageEntityTests : IDisposable
     {
         // Arrange: create a user and session first
         var user = new User { Username = "muser", Email = "m@example.com", HashedPassword = "pw" };
-        var session = new Session { User = user };
+        var session = new Session { User = user, Title= "Test" };
         var message = new Message { Session = session, Content = "Hello", Role = EMessageRole.User };
 
         // Act
@@ -116,7 +116,7 @@ public class MessageEntityTests : IDisposable
     public void Message_Relationships_SessionAssociation_ShouldBeConsistent()
     {
         var user = new User { Username = "msguser", Email = "u@example.com", HashedPassword = "pw" };
-        var session = new Session { User = user };
+        var session = new Session { User = user, Title= "Test" };
         var message = new Message { Content = "Rel test", Role = EMessageRole.Bot };
 
         // Use helper on session

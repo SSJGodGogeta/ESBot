@@ -134,7 +134,7 @@ public class UserEntityTests : IDisposable
         };
         var session = new Session 
         { 
-            User = user
+            User = user, Title= "Test"
         };
 
         // Act

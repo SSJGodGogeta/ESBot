@@ -29,7 +29,7 @@ public class QuizItemEntityTests : IDisposable
     public void QuizItem_Creation_WithValidData_ShouldSucceed()
     {
         var user = new User { Username = "qiuser", Email = "qi@example.com", HashedPassword = "pw" };
-        var session = new Session { User = user };
+        var session = new Session { User = user, Title= "Test" };
         var request = new QuizRequest { Session = session, Topic = "History", Difficulty = EDifficulty.Medium };
         var item = new QuizItem { QuizRequest = request, Question = "Q?", CorrectAnswer = "A" };
 
@@ -113,7 +113,7 @@ public class QuizItemEntityTests : IDisposable
     public void QuizItem_Relationships_SubmittedAnswersAssociation_ShouldBeConsistent()
     {
         var user = new User { Username = "qiansweruser", Email = "qianswer@example.com", HashedPassword = "password" };
-        var session = new Session { User = user };
+        var session = new Session { User = user, Title= "Test" };
         var request = new QuizRequest { Session = session, Topic = "History", Difficulty = EDifficulty.Medium };
         var item = new QuizItem { QuizRequest = request, Question = "Q?", CorrectAnswer = "A" };
         var answer = new SubmittedAnswer { QuizItem = item, Answer = "A" };

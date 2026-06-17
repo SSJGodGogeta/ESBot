@@ -29,7 +29,7 @@ public class SubmittedAnswerEntityTests : IDisposable
     public void SubmittedAnswer_Creation_WithValidData_ShouldSucceed()
     {
         var user = new User { Username = "sauser", Email = "sa@example.com", HashedPassword = "pw" };
-        var session = new Session { User = user };
+        var session = new Session { User = user, Title= "Test" };
         var request = new QuizRequest { Session = session, Topic = "Geo", Difficulty = EDifficulty.Easy };
         var item = new QuizItem { QuizRequest = request, Question = "Where?", CorrectAnswer = "Here" };
         var answer = new SubmittedAnswer { QuizItem = item, Answer = "Here" };
@@ -101,7 +101,7 @@ public class SubmittedAnswerEntityTests : IDisposable
     public void SubmittedAnswer_Creation_WithoutEvaluationResult_ShouldSucceed()
     {
         var user = new User { Username = "optional-eval", Email = "optional-eval@example.com", HashedPassword = "password" };
-        var session = new Session { User = user };
+        var session = new Session { User = user, Title= "Test" };
         var request = new QuizRequest { Session = session, Topic = "Geo", Difficulty = EDifficulty.Easy };
         var item = new QuizItem { QuizRequest = request, Question = "Where?", CorrectAnswer = "Here" };
         var answer = new SubmittedAnswer { QuizItem = item, Answer = "Here" };
@@ -121,7 +121,7 @@ public class SubmittedAnswerEntityTests : IDisposable
     public void SubmittedAnswer_Relationships_EvaluationResultAssociation_ShouldBeConsistent()
     {
         var user = new User { Username = "saevaluser", Email = "saeval@example.com", HashedPassword = "password" };
-        var session = new Session { User = user };
+        var session = new Session { User = user, Title= "Test" };
         var request = new QuizRequest { Session = session, Topic = "Geo", Difficulty = EDifficulty.Easy };
         var item = new QuizItem { QuizRequest = request, Question = "Where?", CorrectAnswer = "Here" };
         var answer = new SubmittedAnswer { QuizItem = item, Answer = "Here" };

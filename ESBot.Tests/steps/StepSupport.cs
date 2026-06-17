@@ -35,7 +35,7 @@ public sealed class StepSupportHooks(ScenarioContext scenarioContext)
 
         var session = new Session
         {
-            User = user
+            User = user, Title= "Test"
         };
         
         var quizRequest = new QuizRequest()

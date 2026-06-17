@@ -37,7 +37,7 @@ public class SessionRepositoryTests : IDisposable
     [Fact]
     public void CreateSession_WithValidSession_PersistsToDatabase()
     {
-        var session = new Session { UserId = _testUser.Id };
+        var session = new Session { UserId = _testUser.Id, Title= "Test" };
 
         _repository.CreateSession(session);
 
@@ -49,7 +49,7 @@ public class SessionRepositoryTests : IDisposable
     [Fact]
     public void CreateSession_WithValidSession_ReturnsPersistedSession()
     {
-        var session = new Session { UserId = _testUser.Id };
+        var session = new Session { UserId = _testUser.Id, Title= "Test" };
 
         var result = _repository.CreateSession(session);
 
@@ -68,7 +68,7 @@ public class SessionRepositoryTests : IDisposable
     [Fact]
     public void FindSessionById_WithExistingSession_ReturnsSession()
     {
-        var session = new Session { UserId = _testUser.Id };
+        var session = new Session { UserId = _testUser.Id, Title= "Test" };
         _context.UserSessions.Add(session);
         _context.SaveChanges();
 
@@ -91,8 +91,8 @@ public class SessionRepositoryTests : IDisposable
     [Fact]
     public void FindSessionsByUser_WithMultipleSessions_ReturnsAllForUser()
     {
-        var sessionA = new Session { UserId = _testUser.Id };
-        var sessionB = new Session { UserId = _testUser.Id };
+        var sessionA = new Session { UserId = _testUser.Id, Title= "Test" };
+        var sessionB = new Session { UserId = _testUser.Id, Title= "Test" };
         _context.UserSessions.AddRange(sessionA, sessionB);
         _context.SaveChanges();
 
@@ -105,11 +105,11 @@ public class SessionRepositoryTests : IDisposable
     [Fact]
     public void FindSessionsByUser_ReturnsSessionsOrderedByStartedAtDescending()
     {
-        var sessionA = new Session { UserId = _testUser.Id };
+        var sessionA = new Session { UserId = _testUser.Id, Title= "Test" };
         _context.UserSessions.Add(sessionA);
         _context.SaveChanges();
 
-        var sessionB = new Session { UserId = _testUser.Id };
+        var sessionB = new Session { UserId = _testUser.Id, Title= "Test" };
         _context.UserSessions.Add(sessionB);
         _context.SaveChanges();
 
@@ -132,7 +132,7 @@ public class SessionRepositoryTests : IDisposable
     {
         var otherUser = new User { Username = "otheruser", Email = "other@example.com", HashedPassword = "hashedpw1" };
         _context.Users.Add(otherUser);
-        _context.UserSessions.Add(new Session { UserId = otherUser.Id });
+        _context.UserSessions.Add(new Session { UserId = otherUser.Id, Title= "Test" });
         _context.SaveChanges();
 
         var result = _repository.FindSessionsByUser(_testUser.Id);
@@ -145,7 +145,7 @@ public class SessionRepositoryTests : IDisposable
     [Fact]
     public void AppendMessage_WithValidData_PersistsMessageLinkedToSession()
     {
-        var session = new Session { UserId = _testUser.Id };
+        var session = new Session { UserId = _testUser.Id, Title= "Test" };
         _context.UserSessions.Add(session);
         _context.SaveChanges();
         var message = new Message { Content = "Hello", Role = EMessageRole.User };
@@ -169,7 +169,7 @@ public class SessionRepositoryTests : IDisposable
     [Fact]
     public void AppendMessage_WithNullMessage_ThrowsArgumentNullException()
     {
-        var session = new Session { UserId = _testUser.Id };
+        var session = new Session { UserId = _testUser.Id, Title= "Test" };
         _context.UserSessions.Add(session);
         _context.SaveChanges();
 
@@ -181,7 +181,7 @@ public class SessionRepositoryTests : IDisposable
     [Fact]
     public void GetMessageHistory_WithMessages_ReturnsAllMessagesForSession()
     {
-        var session = new Session { UserId = _testUser.Id };
+        var session = new Session { UserId = _testUser.Id, Title= "Test" };
         _context.UserSessions.Add(session);
         _context.SaveChanges();
         _context.Messages.AddRange(
@@ -198,7 +198,7 @@ public class SessionRepositoryTests : IDisposable
     [Fact]
     public void GetMessageHistory_ReturnsMessagesOrderedByCreatedAtAscending()
     {
-        var session = new Session { UserId = _testUser.Id };
+        var session = new Session { UserId = _testUser.Id, Title= "Test" };
         _context.UserSessions.Add(session);
         _context.SaveChanges();
         var first = new Message { Content = "First", Role = EMessageRole.User, SessionId = session.Id };
@@ -217,7 +217,7 @@ public class SessionRepositoryTests : IDisposable
     [Fact]
     public void GetMessageHistory_WithNoMessages_ReturnsEmptyList()
     {
-        var session = new Session { UserId = _testUser.Id };
+        var session = new Session { UserId = _testUser.Id, Title= "Test" };
         _context.UserSessions.Add(session);
         _context.SaveChanges();
 
@@ -229,8 +229,8 @@ public class SessionRepositoryTests : IDisposable
     [Fact]
     public void GetMessageHistory_DoesNotReturnMessagesFromOtherSessions()
     {
-        var sessionA = new Session { UserId = _testUser.Id };
-        var sessionB = new Session { UserId = _testUser.Id };
+        var sessionA = new Session { UserId = _testUser.Id, Title= "Test" };
+        var sessionB = new Session { UserId = _testUser.Id, Title= "Test" };
         _context.UserSessions.AddRange(sessionA, sessionB);
         _context.SaveChanges();
         _context.Messages.Add(new Message { Content = "Belongs to B", Role = EMessageRole.User, SessionId = sessionB.Id });
@@ -246,7 +246,7 @@ public class SessionRepositoryTests : IDisposable
     [Fact]
     public void UpdateSessionEndTime_WithValidTime_PersistsEndedAt()
     {
-        var session = new Session { UserId = _testUser.Id };
+        var session = new Session { UserId = _testUser.Id, Title= "Test" };
         _context.UserSessions.Add(session);
         _context.SaveChanges();
         var endTime = new DateTime(2026, 1, 1, 12, 0, 0, DateTimeKind.Utc);
@@ -260,7 +260,7 @@ public class SessionRepositoryTests : IDisposable
     [Fact]
     public void UpdateSessionEndTime_WithNull_ClearsEndedAt()
     {
-        var session = new Session { UserId = _testUser.Id, EndedAt = DateTime.UtcNow };
+        var session = new Session { UserId = _testUser.Id, EndedAt = DateTime.UtcNow, Title= "Test" };
         _context.UserSessions.Add(session);
         _context.SaveChanges();
 
@@ -273,7 +273,7 @@ public class SessionRepositoryTests : IDisposable
     [Fact]
     public void UpdateSessionEndTime_ReturnsUpdatedSession()
     {
-        var session = new Session { UserId = _testUser.Id };
+        var session = new Session { UserId = _testUser.Id, Title= "Test" };
         _context.UserSessions.Add(session);
         _context.SaveChanges();
         var endTime = DateTime.UtcNow;
@@ -296,7 +296,7 @@ public class SessionRepositoryTests : IDisposable
     [Fact]
     public void DeleteSession_WithExistingSession_RemovesRecordFromDatabase()
     {
-        var session = new Session { UserId = _testUser.Id };
+        var session = new Session { UserId = _testUser.Id, Title= "Test" };
         _context.UserSessions.Add(session);
         _context.SaveChanges();
 
@@ -308,7 +308,7 @@ public class SessionRepositoryTests : IDisposable
     [Fact]
     public void DeleteSession_WithExistingSession_ReturnsTrue()
     {
-        var session = new Session { UserId = _testUser.Id };
+        var session = new Session { UserId = _testUser.Id, Title= "Test" };
         _context.UserSessions.Add(session);
         _context.SaveChanges();
 
@@ -330,7 +330,7 @@ public class SessionRepositoryTests : IDisposable
     [Fact]
     public void FindQuizItemById_WithExistingItem_ReturnsQuizItemWithQuizRequestEagerLoaded()
     {
-        var session = new Session { UserId = _testUser.Id };
+        var session = new Session { UserId = _testUser.Id, Title= "Test" };
         _context.UserSessions.Add(session);
         var quizRequest = new QuizRequest { SessionId = session.Id, Topic = "C#", Difficulty = EDifficulty.Easy };
         _context.QuizRequests.Add(quizRequest);
@@ -359,7 +359,7 @@ public class SessionRepositoryTests : IDisposable
     [Fact]
     public void AddSession_WithoutSaveChanges_IsTrackedAsAddedButNotYetPersisted()
     {
-        var session = new Session { UserId = _testUser.Id };
+        var session = new Session { UserId = _testUser.Id, Title= "Test" };
 
         _repository.AddSession(session);
 
@@ -369,7 +369,7 @@ public class SessionRepositoryTests : IDisposable
     [Fact]
     public void AddSession_ThenSaveChanges_PersistsRecordToDatabase()
     {
-        var session = new Session { UserId = _testUser.Id };
+        var session = new Session { UserId = _testUser.Id, Title= "Test" };
 
         _repository.AddSession(session);
         _repository.SaveChanges();
@@ -380,7 +380,7 @@ public class SessionRepositoryTests : IDisposable
     [Fact]
     public void AddMessage_ThenSaveChanges_PersistsRecordToDatabase()
     {
-        var session = new Session { UserId = _testUser.Id };
+        var session = new Session { UserId = _testUser.Id, Title= "Test" };
         _context.UserSessions.Add(session);
         _context.SaveChanges();
         var message = new Message { Content = "Deferred message", Role = EMessageRole.User, SessionId = session.Id };
@@ -394,7 +394,7 @@ public class SessionRepositoryTests : IDisposable
     [Fact]
     public void AddQuizRequest_ThenSaveChanges_PersistsRecordToDatabase()
     {
-        var session = new Session { UserId = _testUser.Id };
+        var session = new Session { UserId = _testUser.Id, Title= "Test" };
         _context.UserSessions.Add(session);
         _context.SaveChanges();
         var quizRequest = new QuizRequest { SessionId = session.Id, Topic = "Math", Difficulty = EDifficulty.Medium };
@@ -411,7 +411,7 @@ public class SessionRepositoryTests : IDisposable
     [Fact]
     public void AddQuizItem_ThenSaveChanges_PersistsRecordToDatabase()
     {
-        var session = new Session { UserId = _testUser.Id };
+        var session = new Session { UserId = _testUser.Id, Title= "Test" };
         _context.UserSessions.Add(session);
         var quizRequest = new QuizRequest { SessionId = session.Id, Topic = "Science", Difficulty = EDifficulty.Hard };
         _context.QuizRequests.Add(quizRequest);

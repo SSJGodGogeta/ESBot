@@ -21,6 +21,21 @@ public partial class Program
             throw new NullReferenceException("connectionString is null! Please check  your configuration!");
 
         var healthChecksBuilder = builder.Services.AddHealthChecks();
+
+        builder.Services.AddCors(options =>
+        {
+            options.AddDefaultPolicy(policy =>
+            {
+                policy.WithOrigins(
+                        "http://localhost:3000",
+                        "http://127.0.0.1:3000",
+                        "http://localhost:5173",
+                        "http://127.0.0.1:5173",
+                        "http://localhost:5243")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+            });
+        });
         
         if (builder.Environment.IsEnvironment("Testing"))
         {
@@ -61,6 +76,7 @@ public partial class Program
         // Middleware
         // =====================
         app.UseMiddleware<RequestLoggingMiddleware>();
+        app.UseCors();
         app.UseSwagger();
         app.UseSwaggerUI();
         app.MapControllers();

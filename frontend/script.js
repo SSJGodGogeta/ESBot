@@ -33,7 +33,7 @@ function getApiUrl(path) {
 }
 
 async function pingApi() {
-  const url = getApiUrl('/v1/health');
+  const url = getApiUrl('/api/v1/health');
   apiStatus.textContent = 'Checking API...';
   try {
     const response = await fetch(url);

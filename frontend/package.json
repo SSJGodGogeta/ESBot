@@ -1,0 +1,17 @@
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "description": "A lightweight frontend for the ESBot API. It supports:",
+  "main": "script.js",
+  "scripts": {
+    "test": "cypress run",
+    "test:headed": "cypress open",
+    "test:ci": "cypress run --headless"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "cypress": "^15.18.0"
+  }
+}

@@ -10,7 +10,7 @@ namespace ESBot.API.Controllers.v1;
 
 [Route("/v1/[controller]")]
 [ApiController]
-public class QuizItemController(EsBotDbContext context,
+public class QuizItemsController(EsBotDbContext context,
     IMapper<CreateQuizItemDto, UpdateQuizItemDto, QuizItemDto, QuizItem> mapper) 
     : BaseController<QuizItem, CreateQuizItemDto, UpdateQuizItemDto, QuizItemDto>(context, mapper), 
         IController<QuizItem, QuizItemFilter, CreateQuizItemDto, UpdateQuizItemDto>

@@ -10,7 +10,7 @@ namespace ESBot.API.Controllers.v1;
 
 [Route("/v1/[controller]")]
 [ApiController]
-public class SubmittedAnswerController(EsBotDbContext context,
+public class SubmittedAnswersController(EsBotDbContext context,
     IMapper<CreateSubmittedAnswerDto, UpdateSubmittedAnswerDto, SubmittedAnswerDto, SubmittedAnswer> mapper) 
     : BaseController<SubmittedAnswer, CreateSubmittedAnswerDto, UpdateSubmittedAnswerDto, SubmittedAnswerDto>(context, mapper), 
         IController<SubmittedAnswer, SubmittedAnswerFilter, CreateSubmittedAnswerDto, UpdateSubmittedAnswerDto>

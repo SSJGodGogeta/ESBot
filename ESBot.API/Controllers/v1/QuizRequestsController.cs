@@ -10,7 +10,7 @@ namespace ESBot.API.Controllers.v1;
 
 [Route("/v1/[controller]")]
 [ApiController]
-public class QuizRequestController(EsBotDbContext context,
+public class QuizRequestsController(EsBotDbContext context,
     IMapper<CreateQuizRequestDto, UpdateQuizRequestDto, QuizRequestDto, QuizRequest> mapper) 
     : BaseController<QuizRequest, CreateQuizRequestDto, UpdateQuizRequestDto, QuizRequestDto>(context, mapper), 
         IController<QuizRequest, QuizRequestFilter, CreateQuizRequestDto, UpdateQuizRequestDto>

@@ -10,7 +10,7 @@ namespace ESBot.API.Controllers.v1;
 
 [Route("/v1/[controller]")]
 [ApiController]
-public class UserController(EsBotDbContext context,
+public class UsersController(EsBotDbContext context,
     IMapper<CreateUserDto, UpdateUserDto, UserDto, User> mapper) 
     : BaseController<User, CreateUserDto, UpdateUserDto, UserDto>(context, mapper), 
         IController<User, UserFilter, CreateUserDto, UpdateUserDto>

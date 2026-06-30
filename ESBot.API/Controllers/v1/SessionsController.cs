@@ -10,7 +10,7 @@ namespace ESBot.API.Controllers.v1;
 
 [Route("/v1/[controller]")]
 [ApiController]
-public class SessionController(EsBotDbContext context,
+public class SessionsController(EsBotDbContext context,
     IMapper<CreateSessionDto, UpdateSessionDto, SessionDto, Session> mapper) 
     : BaseController<Session, CreateSessionDto, UpdateSessionDto, SessionDto>(context, mapper), 
         IController<Session, SessionFilter, CreateSessionDto, UpdateSessionDto>

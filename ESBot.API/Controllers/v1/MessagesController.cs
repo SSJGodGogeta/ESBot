@@ -10,7 +10,7 @@ namespace ESBot.API.Controllers.v1;
 
 [Route("/v1/[controller]")]
 [ApiController]
-public class MessageController(EsBotDbContext context,
+public class MessagesController(EsBotDbContext context,
     IMapper<CreateMessageDto, UpdateMessageDto, MessageDto, Message> mapper) 
     : BaseController<Message, CreateMessageDto, UpdateMessageDto, MessageDto>(context, mapper), 
         IController<Message, MessageFilter, CreateMessageDto, UpdateMessageDto>

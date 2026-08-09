@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ESBot Frontend</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header>
+      <h1>ESBot Frontend</h1>
+      <p>Create sessions and send chat messages to the API.</p>
+    </header>
+
+    <section class="section card">
+      <h2>API Configuration</h2>
+      <label>
+        Backend base URL:
+        <input id="apiBaseUrl" type="url" placeholder="http://localhost:5243" value="http://localhost:5243" />
+      </label>
+      <button id="apiPingButton">Ping API</button>
+      <p id="apiStatus" class="status">Enter API URL and click Ping.</p>
+    </section>
+
+    <section class="section card" id="userSection">
+      <h2>Create User</h2>
+      <div class="form-grid">
+        <label>Username<input id="username" type="text" placeholder="student1" /></label>
+        <label>Email<input id="email" type="email" placeholder="student@example.com" /></label>
+        <label>Password<input id="password" type="password" placeholder="minimum 8 characters" /></label>
+      </div>
+      <button id="createUserButton">Create User</button>
+      <p id="userStatus" class="status"></p>
+    </section>
+
+    <section class="section card" id="sessionSection">
+      <h2>Create Session</h2>
+      <label>
+        Session title
+        <input id="sessionTitle" type="text" placeholder="Study session: Software Testing" />
+      </label>
+      <button id="createSessionButton">Create Session</button>
+      <p id="sessionStatus" class="status"></p>
+
+      <div id="sessionsListContainer" class="sessions-list hidden">
+        <h3>Your sessions</h3>
+        <ul id="sessionsList"></ul>
+      </div>
+    </section>
+
+    <section class="section card hidden" id="chatSection">
+      <h2>Chat</h2>
+      <div class="chat-panel" id="chatPanel"></div>
+      <form id="chatForm" class="chat-form">
+        <input id="chatInput" type="text" placeholder="Ask a question or send a message" autocomplete="off" />
+        <button type="submit">Send</button>
+      </form>
+      <p id="chatStatus" class="status"></p>
+    </section>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -22,6 +22,7 @@
           git                # Version control (lightweight, can be removed)
           curl               # For testing the API
           jmeter             # For performance testing the api
+          cypress            # E2E testing for frontend (required on NixOS)
         ];
         
       in

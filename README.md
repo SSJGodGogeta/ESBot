@@ -127,11 +127,45 @@ dotnet tool install --global dotnet-ef
 Browser oder Postman:
 
 ```
-http://localhost:5000/api/test
+http://localhost:5243/v1/health
 ```
 
+## 10. Frontend starten
 
-## 10. Häufige Probleme
+Nach dem Backend kannst du das Frontend starten.
+
+Aus dem `frontend/` Ordner:
+
+**Mit Python:**
+
+```bash
+cd frontend
+python -m http.server 3000
+```
+
+**Mit Node.js und `npx`:**
+
+```bash
+cd frontend
+npx serve . -l 3000
+```
+
+Dann öffne im Browser:
+
+```
+http://localhost:3000
+```
+
+### Frontend-Features
+
+- Benutzer erstellen
+- Sessions (Lerngruppen) erstellen
+- Chat-Nachrichten senden und anzeigen
+- Session-Verwaltung
+
+Das Frontend stellt sich automatisch auf die Backend-URL `http://localhost:5243` ein, aber du kannst die URL im Frontend anpassen, falls das Backend auf einer anderen URL erreichbar ist.
+
+## 11. Häufige Probleme
 
 ### Problem: Connection refused (5432)
 
@@ -163,20 +197,23 @@ dotnet ef migrations add Fix
 dotnet ef database update
 ```
 
-## 11. Projektstruktur
+## 12. Projektstruktur
 
 ```
 ESBot/
 │
-├── ESBot.API
-├── ESBot.Domain
-├── ESBot.Infrastructure
-├── ESBot.Tests
+├── ESBot.API                 # Backend (ASP.NET Core)
+├── ESBot.Domain              # Domain Models und Enums
+├── ESBot.Infrastructure       # Database und Repositories
+├── ESBot.Application          # Business Logic (ChatService, etc.)
+├── ESBot.Tests                # Unit und Integration Tests
 │
+├── frontend/                  # Frontend (HTML/CSS/JS)
+|
 └── README.md
 ```
 
-## 12. Static Code Analysis
+## 13. Static Code Analysis
 
 ### SonarQube
 

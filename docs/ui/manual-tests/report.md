@@ -1,5 +1,48 @@
 # ESBot Test Report
 
+## Testing Approach
+
+### Scope and source of test cases
+Test cases are derived directly from the Gherkin BDD scenarios written for Exercise 5
+(`ESBot.Tests/features/*.feature`). Each manual test case below maps to one `Scenario:`
+block; the "Steps performed" table is a manual, UI-level restatement of that scenario's
+`Given`/`When`/`Then` steps:
+
+| Test case | BDD feature file | Scenario |
+|---|---|---|
+| TC-AUTH-01 | `UserAuthentication.feature` | User creation is a prerequisite step for "I am on the login page" / session setup flows |
+| TC-CHAT-02 | `AnswerCourseQuestions.feature` | "Ask a question about a specific topic" |
+
+### Environment setup used for every run
+1. Start the database: `docker compose up -d db` (Postgres 16, from `compose.yaml`).
+2. Start the API from `ESBot.API/`: `dotnet run` with `ASPNETCORE_ENVIRONMENT=Development`.
+   The health endpoint (`GET /api/v1/health`) is checked with a browser request/`curl`
+   before any UI step is attempted, so an unhealthy backend is never mistaken for a UI bug.
+3. Start the frontend from `frontend/`: `python -m http.server 3000` (see
+   `frontend/README.md`), then open `http://localhost:3000` in the browser under test.
+4. **LLM mock**: at the time of testing the backend has no concrete `ILlmService`
+   implementation registered in `ESBot.API/Program.cs` (only a mocked instance exists
+   inside `ESBot.Tests/ChatServiceTest.cs` for unit tests). There is therefore no
+   deterministic mock LLM wired into the running API for manual/E2E testing yet — this is
+   recorded per test case below ("LLM Mock" row) and called out explicitly wherever it
+   affects the observed result. This is a known backend gap tracked separately from the
+   UI itself.
+
+### How each test case is verified
+A test case is marked **PASS** only when every row in its "Expected vs. Actual Result"
+table matches, cross-checked with two independent signals, not the UI text alone:
+- **Visual/DOM check** — the expected element is visible and contains the expected
+  (non-brittle, prefix/shape-based rather than exact-string) content.
+- **Network check** — the browser DevTools Network tab (or, for the automated suite,
+  Cypress's command log) is used to confirm the underlying HTTP request/response matches
+  what the UI claims happened (correct status code, correct endpoint, correct payload).
+  This catches cases where the UI silently swallows or misreports an API error.
+
+A test case is marked **FAIL** as soon as either signal disagrees with the expected
+result; the actual HTTP status/response is recorded in the "Actual" column and, where the
+failure is non-obvious from text alone, a screenshot is attached under
+`docs/ui/manual-tests/screenshots/`.
+
 ## Test Case 1: TC-AUTH-01 - User Registration and Session Creation
 
 ### Test Case Details
@@ -79,7 +122,19 @@
 | Message Formatting | Messages properly escaped and formatted | skipped | - |
 
 ### Screenshots
-![Error shown when sending a message](../../../assets/lab11_tc-chat-02.png)
+The original screenshot taken during the 2026-06-23 manual run
+(`lab11_tc-chat-02.png`) was never committed to the repository, so the link previously
+pointed at a non-existent file. It has been replaced below with a screenshot captured
+while re-verifying this report (2026-08-09) that reproduces the same underlying cause —
+the frontend calls a singular endpoint path (`/v1/user`, `/v1/session`, `/v1/message`)
+while the API exposes plural, pluralized routes (`/v1/Users`, `/v1/Sessions`,
+`/v1/Messages`, see `ESBot.API/Controllers/v1/*Controller.cs`), so requests are rejected
+with `404 Not Found`/`400 Bad Request` before ever reaching the chat logic. This was
+captured via the automated Cypress suite (see [`docs/ui/e2e-report.md`](../e2e-report.md))
+because it hits the identical code path as the manual browser test and is fully
+reproducible on demand.
+
+![API endpoint path mismatch reproduced automatically](./screenshots/api-endpoint-404-repro.png)
 
 ### Result
 **FAIL**
